@@ -1,0 +1,104 @@
+{
+    "alert": {
+        "text": "Pozor: Trenutno poteka testiranje nove spletne strani."
+    },
+    "nav": {
+        "about": "O nas",
+        "news": "Novice",
+        "vehicles": "Vozila",
+        "leadership": "Vodstvo",
+        "gallery": "Galerija",
+        "contact": "Kontakt",
+        "login": "Prijava"
+    },
+    "sidebar": {
+        "quick_info": "Hitre informacije",
+        "status": "Intervencijski status",
+        "ready": "Enota v pripravljenosti (GZS)",
+        "weather": "Trenutno vreme",
+        "systems": "Operativni sistemi",
+        "next_event": "Naslednji dogodek"
+    },
+    "hero": {
+        "badge1": "Vedno pripravljeni",
+        "title1": "PGD Majšperk Breg",
+        "cta2": "Več o nas",
+        "badge2": "Tradicija od 1947",
+        "title2": "Zgodovina in Ponos",
+        "cta3": "Naša zgodba",
+        "badge3": "Moderni vozni park",
+        "title3": "Pripravljeni na izzive",
+        "cta4": "Oglej si vozila"
+    },
+    "stats": {
+        "active": "Aktivnih",
+        "founded": "Ustanovitev",
+        "vehicles": "Vozila",
+        "ready": "Pripravljenost"
+    },
+    "about": {
+        "title": "O nas",
+        "p1": "PGD Majšperk Breg je prostovoljno gasilsko društvo z dolgoletno tradicijo, ustanovljeno leta 1947. Nahajamo se na naslovu Breg 4, 2322 Majšperk.",
+        "p2": "Naše društvo je ključni steber varnosti v lokalni skupnosti, kjer se trudimo za varovanje življenj in premoženja.",
+        "pill1": "Požarna varnost",
+        "pill2": "Tehnično reševanje",
+        "pill3": "Pomoč ob naravnih nesrečah"
+    },
+    "news": {
+        "title": "Zadnje novice",
+        "more": "Preberi več"
+    },
+    "vehicles": {
+        "title": "Vozni park",
+        "gvc1_desc": "Gasilsko vozilo s cisterno (GVC-1) je namenjeno gašenju požarov in tehničnemu reševanju. Posadka: 1+5 do 1+8. Rezervoar: 2500L vode in 200L penila. Črpalka: 2000 l/min pri 10 bar. Oprema: Hitri napad, svetlobni stolp, dihalni aparati.",
+        "gvm1_desc": "Gasilsko vozilo za moštvo (GVM-1) je namenjeno prevozu gasilcev na intervencije in mladine na tekmovanja. Posadka: 1+8. NDM: do 3500kg (B kategorija). Oprema: Mobilna postaja ZARE, prva pomoč, oprema za zavarovanje kraja."
+    },
+    "leadership": {
+        "title": "Naše vodstvo",
+        "president": "Predsednik",
+        "commander": "Poveljnik",
+        "v_president": "Podpredsednik",
+        "v_commander": "Podpoveljnik"
+    },
+    "calendar": {
+        "title": "Javni koledar dogodkov"
+    },
+    "gallery": {
+        "title": "Foto utrinki",
+        "all": "Vse",
+        "vaje": "Vaje",
+        "tekmovanja": "Tekmovanja",
+        "resevanja": "Reševanja",
+        "zabava": "Zabava",
+        "prireditve": "Prireditve",
+        "download": "Prenesi",
+        "share": "Deli"
+    },
+    "donations": {
+        "title": "Podprite naše delo",
+        "tab_tax": "Dela dohodnine",
+        "tab_transfer": "Nakazilo",
+        "dohodnina_desc": "Vsako leto lahko do 1,0 % svoje dohodnine namenite nevladnim organizacijam. To vas nič ne stane!",
+        "tax_btn": "Oddaj vlogo preko eDavkov",
+        "tax_id": "Davčna številka:",
+        "tax_name": "Prejemnik:",
+        "desc": "Vaš prispevek nam pomaga pri nakupu opreme in vzdrževanju enote.",
+        "custom": "Poljubno",
+        "btn": "Prikaži podatke za nakazilo"
+    },
+    "contact": {
+        "title": "Kontaktirajte nas",
+        "form_name": "Ime in priimek",
+        "form_email": "E-pošta",
+        "form_msg": "Sporočilo",
+        "form_send": "Pošlji sporočilo"
+    },
+    "footer": {
+        "rights": "Vse pravice pridržane.",
+        "legal": "Pravno obvestilo",
+        "privacy": "Varstvo podatkov"
+    },
+    "modal": {
+        "donate_title": "Podatki za nakazilo"
+    }
+}

@@ -1,4 +1,26 @@
 <?php
+// Prevent PHP from outputting raw HTML errors/warnings
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+// Custom exception handler to return JSON
+set_exception_handler(function ($exception) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Server Error: ' . $exception->getMessage()
+    ]);
+    exit;
+});
+
+// Convert PHP warnings, notices, and errors to exceptions
+set_error_handler(function ($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) {
+        return;
+    }
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");

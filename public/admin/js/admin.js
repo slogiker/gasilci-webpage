@@ -37,9 +37,22 @@ const API = {
             throw new Error('Unauthorized');
         }
 
-        const result = await response.json();
+        let result;
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                result = await response.json();
+            } catch (e) {
+                const text = await response.text();
+                throw new Error(text || 'Invalid JSON response from server');
+            }
+        } else {
+            const text = await response.text();
+            throw new Error(text || `HTTP error: ${response.status} ${response.statusText}`);
+        }
+
         if (!response.ok) {
-            throw new Error(result.error || 'Something went wrong');
+            throw new Error((result && result.error) || 'Something went wrong');
         }
         return result;
     },

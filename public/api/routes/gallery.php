@@ -2,6 +2,9 @@
 $method = $_SERVER['REQUEST_METHOD'];
 
 function resizeImage($sourcePath, $destPath, $maxWidth = 1200) {
+    if (!function_exists('imagecreatefromjpeg')) {
+        return copy($sourcePath, $destPath);
+    }
     list($width, $height, $type) = getimagesize($sourcePath);
     
     if ($width <= $maxWidth) {

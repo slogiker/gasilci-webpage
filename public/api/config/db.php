@@ -117,5 +117,15 @@ try {
     }
 
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    header('Content-Type: application/json');
+    http_response_code(500);
+    $errorMessage = $e->getMessage();
+    if (strpos(strtolower($errorMessage), 'could not find driver') !== false) {
+        $errorMessage .= '. Please ensure that the pdo_sqlite extension is enabled in your php.ini configuration.';
+    }
+    echo json_encode([
+        'success' => false,
+        'error' => 'Database connection failed: ' . $errorMessage
+    ]);
+    exit;
 }

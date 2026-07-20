@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGD Majšperk Breg - Uradna spletna stran</title>
+    <link rel="icon" href="img/logo-omre.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
+                        <span>PGD Majšperk Breg</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="novice.html">Novice</a>
+                <a href="galerija.html">Galerija</a>
+                <a href="index.html#vozila">Garaža</a>
+                <a href="index.html#kontakt">Kontakt</a>
+                <button class="hamburger" id="sidebar-toggle" aria-label="Meni">☰</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="page-wrapper">
+        <main class="gallery-standalone">
+            <div class="news-header text-center">
+                <span class="section-label">GALERIJA</span>
+                <h1>Foto utrinki</h1>
+                
+                <div class="news-filters justify-center">
+                    <button class="filter-btn active" data-category="Vse">Vse</button>
+                    <button class="filter-btn" data-category="Tekmovanje">Tekmovanje</button>
+                    <button class="filter-btn" data-category="Vaje">Vaje</button>
+                    <button class="filter-btn" data-category="Prosti čas">Prosti čas</button>
+                </div>
+            </div>
+            
+            <div class="gallery-masonry" id="gallery-grid">
+                <!-- Photos loaded via JS -->
+            </div>
+        </main>
+        
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
+                        <span style="color: var(--text-primary); font-weight: bold; font-size: 1.1rem;">PGD Majšperk Breg</span>
+                    </a>
+                </div>
+                <button class="sidebar-close" id="sidebar-close">&times;</button>
+            </div>
+        
+            <div class="sidebar-divider"></div>
+        
+            <nav class="sidebar-links">
+                <a href="index.html">Domov</a>
+                <a href="novice.html">Novice</a>
+                <a href="galerija.html">Galerija</a>
+                <a href="index.html#vozila">Garaža</a>
+                <a href="index.html#dogodki">Dogodki</a>
+                <a href="index.html#o-nas">O nas</a>
+                <a href="index.html#kontakt">Kontakt</a>
+            </nav>
+        
+            <div class="sidebar-divider"></div>
+        
+            <div class="sidebar-footer">
+                <a href="admin/index.html" class="btn btn-red w-full">Prijava</a>
+                
+                <div class="sidebar-social">
+                    <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <button class="lightbox-nav lightbox-prev" id="prev-btn">&#10094;</button>
+        <div class="lightbox-content">
+            <img src="" id="lightbox-img" class="lightbox-img">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+        </div>
+        <button class="lightbox-nav lightbox-next" id="next-btn">&#10095;</button>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid grid-4" style="padding: 4rem 0;">
+                <div class="footer-col">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; font-family: var(--font-serif);">PGD MAJŠPERK BREG</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Prostovoljno gasilsko društvo z dolgoletno tradicijo in ponosom.</p>
+                </div>
+                <div class="footer-col">
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Uporabne povezave</h4>
+                    <ul style="font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; list-style: none;">
+                        <li><a href="https://ris.pocsag112.org/map.php" target="_blank" rel="noopener">RIS (POCSAG112)</a></li>
+                        <li><a href="https://spin3.sos112.si/javno/zemljevid" target="_blank" rel="noopener">SPIN SOS112</a></li>
+                        <li><a href="index.html#vozila">Vozni park</a></li>
+                        <li><a href="galerija.html">Galerija</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Kontakt</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Breg 4, 2322 Majšperk<br>Email: info@pgd-majsperk.si<br>Tel: 02 795 00 00</p>
+                </div>
+                <div class="footer-col">
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Sledi nam</h4>
+                    <div class="social-links" style="display: flex; gap: 1rem;">
+                        <a href="https://facebook.com/pgdmajsperk" style="color: var(--text-secondary); text-decoration: none;">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <hr style="opacity: 0.1; margin-bottom: 2rem; border: none; border-top: 1px solid var(--bg-border);">
+            <div class="footer-bottom flex justify-between align-center" style="font-size: 0.8rem; color: var(--text-tertiary);">
+                <p>&copy; 2024 PGD Majšperk Breg. <span>Vse pravice pridržane.</span></p>
+                <p class="creator-link">Made by <a href="https://slogiker.si" target="_blank" rel="noopener" style="color: var(--text-secondary);">slogiker</a></p>
+                <div class="footer-links" style="display: flex; gap: 1rem;">
+                    <span style="color: var(--text-secondary);">Pravno obvestilo</span>
+                    <span style="color: var(--text-secondary);">Varstvo podatkov</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>

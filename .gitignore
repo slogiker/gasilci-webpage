@@ -1,6 +1,7 @@
 # Ignore the mobile app folder & php folder in Node branch
 GasilciTekmovanjeApp/
 php/
+gemini.md
 
 # Logs
 logs

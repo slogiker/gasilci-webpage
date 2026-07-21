@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /novice.html
+Allow: /galerija.html
+Allow: /uploads/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://pgd-majsperk-breg.si/sitemap.xml

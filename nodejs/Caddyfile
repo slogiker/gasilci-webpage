@@ -1,0 +1,35 @@
+# Production Caddyfile for PGD Majšperk-Breg
+# Replace {$DOMAIN} with your domain name (e.g. pgd-majsperk-breg.si or majsperk-breg.gasilci.si)
+
+{$DOMAIN:pgd-majsperk-breg.si} {
+    # Automatic HTTPS (Let's Encrypt / ZeroSSL) managed by Caddy
+
+    # Enable HTTP/2 and modern compression (Gzip and Zstandard)
+    encode zstd gzip
+
+    # Security Headers for top SEO and security ranking (A+ SSL rating)
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+
+    # Reverse proxy to Node.js application running on port 8080
+    reverse_proxy localhost:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Access Log
+    log {
+        output file /var/log/caddy/pgd-majsperk.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}

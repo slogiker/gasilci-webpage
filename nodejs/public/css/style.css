@@ -1139,3 +1139,55 @@ footer a:hover {
   .lightbox-prev { left: 0; background: rgba(0,0,0,0.3); }
   .lightbox-next { right: 0; background: rgba(0,0,0,0.3); }
 }
+
+/* Scroll Reveal Animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accessibility Settings Classes */
+html.text-lg { font-size: 115% !important; }
+html.text-xl { font-size: 130% !important; }
+
+body.font-dyslexia, body.font-dyslexia * {
+  font-family: 'Comic Sans MS', sans-serif !important;
+}
+
+body.contrast-grayscale {
+  filter: grayscale(100%) !important;
+}
+
+body.contrast-high {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+body.contrast-high * {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+}
+body.contrast-high a, body.contrast-high button {
+  color: #FFFF00 !important;
+  text-decoration: underline !important;
+}
+
+body.links-underline a {
+  text-decoration: underline !important;
+  font-weight: bold !important;
+}
+body.links-highlight a {
+  outline: 2px solid var(--yellow) !important;
+  background-color: rgba(242, 225, 0, 0.2) !important;
+}
+
+body.disable-animations, body.disable-animations * {
+  transition: none !important;
+  animation: none !important;
+}
+

@@ -13,6 +13,7 @@ import vehiclesRoutes from './routes/vehicles.js';
 import applyRoutes from './routes/apply.js';
 import contactRoutes from './routes/contact.js';
 import uploadRoutes from './routes/upload.js';
+import usersRoutes from './routes/users.js';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use('/api/vehicles', vehiclesRoutes);
 app.use('/api/apply', applyRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/users', usersRoutes);
 
 // Fallback for 404 on API endpoints
 app.use('/api/*', (req, res) => {

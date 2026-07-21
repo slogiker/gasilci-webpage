@@ -126,7 +126,7 @@ const Auth = {
 };
 
 const UI = {
-    currentSection: 'news',
+    currentSection: 'dashboard',
     quill: null,
 
     init() {
@@ -167,7 +167,7 @@ const UI = {
             if (modal && e.target == modal) this.closeModal();
         };
 
-        this.loadSection('news');
+        this.loadSection('dashboard');
     },
 
     async loadSection(section) {
@@ -176,14 +176,27 @@ const UI = {
         if (!contentArea) return;
         contentArea.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary);"></i></div>';
 
+        // Keep active class synced in sidebar
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav a[data-section]');
+        sidebarLinks.forEach(link => {
+            if (link.dataset.section === section) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
         try {
             switch (section) {
+                case 'dashboard': await Sections.dashboard.render(contentArea); break;
                 case 'news': await Sections.news.render(contentArea); break;
                 case 'gallery': await Sections.gallery.render(contentArea); break;
                 case 'events': await Sections.events.render(contentArea); break;
                 case 'vehicles': await Sections.vehicles.render(contentArea); break;
                 case 'members': await Sections.members.render(contentArea); break;
                 case 'users': await Sections.users.render(contentArea); break;
+                case 'applications': await Sections.applications.render(contentArea); break;
+                case 'messages': await Sections.messages.render(contentArea); break;
             }
         } catch (err) {
             contentArea.innerHTML = `<div class="alert alert-error" style="background: rgba(197, 40, 28, 0.1); border: 1px solid var(--red); color: var(--red);">Napaka pri nalaganju: ${err.message}</div>`;
@@ -227,13 +240,8 @@ const UI = {
 const Sections = {
     users: {
         async render(container) {
-            // Mock users data
-            let users = JSON.parse(localStorage.getItem('mock_users')) || [
-                { id: 1, name: 'Administrator', email: 'admin@pgd-majsperk.si', role: 'Admin' },
-                { id: 2, name: 'Janez Novak', email: 'janez.novak@example.com', role: 'Član' },
-                { id: 3, name: 'Marija Horvat', email: 'marija.horvat@example.com', role: 'Član' }
-            ];
-            localStorage.setItem('mock_users', JSON.stringify(users));
+            const res = await API.get('/users');
+            const users = res.data;
 
             container.innerHTML = `
                 <div class="section-header">
@@ -244,7 +252,7 @@ const Sections = {
                     <table>
                         <thead>
                             <tr>
-                                <th>Ime</th>
+                                <th>Uporabniško ime</th>
                                 <th>E-pošta</th>
                                 <th>Vloga</th>
                                 <th>Akcije</th>
@@ -253,9 +261,9 @@ const Sections = {
                         <tbody>
                             ${users.map(u => `
                                 <tr>
-                                    <td>${u.name}</td>
+                                    <td>${u.username || ''}</td>
                                     <td>${u.email}</td>
-                                    <td><span class="pill" style="background: ${u.role === 'Admin' ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; color: ${u.role === 'Admin' ? '#000' : '#fff'}; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem;">${u.role}</span></td>
+                                    <td><span class="pill" style="background: ${u.role === 'admin' ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem;">${u.role}</span></td>
                                     <td class="actions">
                                         <button class="btn btn-sm btn-edit" onclick="Sections.users.showEditForm(${u.id})">Uredi</button>
                                         <button class="btn btn-sm btn-delete" onclick="Sections.users.delete(${u.id})">Izbriši</button>
@@ -272,8 +280,8 @@ const Sections = {
             const html = `
                 <form id="user-form">
                     <div class="form-group">
-                        <label>Ime in priimek</label>
-                        <input type="text" name="name" required>
+                        <label>Uporabniško ime</label>
+                        <input type="text" name="username" required>
                     </div>
                     <div class="form-group">
                         <label>E-pošta</label>
@@ -282,8 +290,8 @@ const Sections = {
                     <div class="form-group">
                         <label>Vloga</label>
                         <select name="role">
-                            <option value="Član">Član</option>
-                            <option value="Admin">Admin</option>
+                            <option value="member">Član</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -298,15 +306,15 @@ const Sections = {
             });
         },
 
-        showEditForm(id) {
-            let users = JSON.parse(localStorage.getItem('mock_users'));
-            const user = users.find(u => u.id === id);
+        async showEditForm(id) {
+            const res = await API.get('/users');
+            const user = res.data.find(u => u.id === id);
             const html = `
                 <form id="user-form">
                     <input type="hidden" name="id" value="${user.id}">
                     <div class="form-group">
-                        <label>Ime in priimek</label>
-                        <input type="text" name="name" value="${user.name}" required>
+                        <label>Uporabniško ime</label>
+                        <input type="text" name="username" value="${user.username || ''}" required>
                     </div>
                     <div class="form-group">
                         <label>E-pošta</label>
@@ -315,8 +323,8 @@ const Sections = {
                     <div class="form-group">
                         <label>Vloga</label>
                         <select name="role">
-                            <option value="Član" ${user.role === 'Član' ? 'selected' : ''}>Član</option>
-                            <option value="Admin" ${user.role === 'Admin' ? 'selected' : ''}>Admin</option>
+                            <option value="member" ${user.role === 'member' ? 'selected' : ''}>Član</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -331,38 +339,278 @@ const Sections = {
             });
         },
 
-        handleSubmit(e, isEdit = false) {
+        async handleSubmit(e, isEdit = false) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            let users = JSON.parse(localStorage.getItem('mock_users'));
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                role: formData.get('role'),
+                password: formData.get('password') || null
+            };
             
-            if (isEdit) {
-                const id = parseInt(formData.get('id'));
-                users = users.map(u => u.id === id ? { ...u, name: formData.get('name'), email: formData.get('email'), role: formData.get('role') } : u);
-                UI.showAlert('Uporabnik posodobljen');
-            } else {
-                const newUser = {
-                    id: Date.now(),
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    role: formData.get('role')
-                };
-                users.push(newUser);
-                UI.showAlert('Uporabnik dodan');
+            try {
+                if (isEdit) {
+                    await API.put(`/users/${formData.get('id')}`, data);
+                    UI.showAlert('Uporabnik posodobljen');
+                } else {
+                    await API.post('/users', data);
+                    UI.showAlert('Uporabnik dodan');
+                }
+                UI.closeModal();
+                this.render(document.getElementById('content-area'));
+            } catch (err) {
+                alert(err.message);
             }
-            
-            localStorage.setItem('mock_users', JSON.stringify(users));
-            UI.closeModal();
-            this.render(document.getElementById('content-area'));
         },
 
-        delete(id) {
-            if (confirm('Izbrišem uporabnika?')) {
-                let users = JSON.parse(localStorage.getItem('mock_users'));
-                users = users.filter(u => u.id !== id);
-                localStorage.setItem('mock_users', JSON.stringify(users));
-                UI.showAlert('Uporabnik izbrisan');
-                this.render(document.getElementById('content-area'));
+        async delete(id) {
+            if (confirm('Ali ste prepričani, da želite izbrisati tega uporabnika?')) {
+                try {
+                    await API.delete(`/users/${id}`);
+                    UI.showAlert('Uporabnik izbrisan');
+                    this.render(document.getElementById('content-area'));
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
+        }
+    },
+
+    dashboard: {
+        async render(container) {
+            const [newsRes, galleryRes, eventsRes, vehiclesRes, membersRes, appsRes, msgRes] = await Promise.all([
+                API.get('/news'),
+                API.get('/gallery'),
+                API.get('/events'),
+                API.get('/vehicles'),
+                API.get('/members'),
+                API.get('/apply'),
+                API.get('/contact')
+            ]);
+
+            const newsCount = newsRes.data.length;
+            const galleryCount = galleryRes.data.length;
+            const eventsCount = eventsRes.data.length;
+            const vehiclesCount = vehiclesRes.data.length;
+            const membersCount = membersRes.data.length;
+            const appsCount = appsRes.data.length;
+            const msgCount = msgRes.data.length;
+
+            container.innerHTML = `
+                <div class="section-header">
+                    <h2>Nadzorna plošča</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Dobrodošli v zaledni pisarni PGD Majšperk Breg.</p>
+                </div>
+                
+                <div class="stats-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+                    <div class="stat-card" onclick="UI.loadSection('news')">
+                        <div class="stat-icon" style="background: rgba(197, 40, 28, 0.1); color: var(--primary);"><i class="fas fa-newspaper"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-num">${newsCount}</span>
+                            <span class="stat-title">Novice</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="UI.loadSection('gallery')">
+                        <div class="stat-icon" style="background: rgba(41, 128, 185, 0.1); color: #2980b9;"><i class="fas fa-images"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-num">${galleryCount}</span>
+                            <span class="stat-title">Galerija slik</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="UI.loadSection('events')">
+                        <div class="stat-icon" style="background: rgba(243, 156, 18, 0.1); color: #f39c12;"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-num">${eventsCount}</span>
+                            <span class="stat-title">Dogodki</span>
+                        </div>
+                    </div>
+                    <div class="stat-card" onclick="UI.loadSection('vehicles')">
+                        <div class="stat-icon" style="background: rgba(39, 174, 96, 0.1); color: #27ae60;"><i class="fas fa-truck-pickup"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-num">${vehiclesCount}</span>
+                            <span class="stat-title">Vozila</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grids" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <span>Najnovejše prijave za članstvo</span>
+                            <span class="badge" style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">${appsCount}</span>
+                        </h3>
+                        <div class="stat-list">
+                            ${appsRes.data.slice(0, 3).map(app => `
+                                <div class="stat-list-item" onclick="UI.loadSection('applications')" style="cursor: pointer; padding: 0.8rem 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: var(--text-main); font-size: 0.95rem; display: block; margin-bottom: 0.2rem;">${app.name}</strong>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${app.email}</div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">${new Date(app.created_at).toLocaleDateString('sl-SI')}</span>
+                                </div>
+                            `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">Ni prejetih prijav.</p>'}
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <span>Najnovejša sporočila</span>
+                            <span class="badge" style="background: #2980b9; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">${msgCount}</span>
+                        </h3>
+                        <div class="stat-list">
+                            ${msgRes.data.slice(0, 3).map(msg => `
+                                <div class="stat-list-item" onclick="UI.loadSection('messages')" style="cursor: pointer; padding: 0.8rem 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong style="color: var(--text-main); font-size: 0.95rem; display: block; margin-bottom: 0.2rem;">${msg.name}</strong>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${msg.subject}</div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">${new Date(msg.created_at).toLocaleDateString('sl-SI')}</span>
+                                </div>
+                            `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">Ni prejetih sporočil.</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    },
+
+    applications: {
+        async render(container) {
+            const res = await API.get('/apply');
+            const items = res.data;
+            container.innerHTML = `
+                <div class="section-header">
+                    <h2>Prijave za članstvo</h2>
+                    <p style="color: var(--text-muted);">Pregled oddanih prijav za včlanitev v društvo.</p>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ime</th>
+                                <th>E-pošta</th>
+                                <th>Telefon</th>
+                                <th>Datum</th>
+                                <th>Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${items.map(item => `
+                                <tr>
+                                    <td><strong>${item.name}</strong></td>
+                                    <td>${item.email}</td>
+                                    <td>${item.phone || '/'}</td>
+                                    <td>${new Date(item.created_at).toLocaleDateString('sl-SI')}</td>
+                                    <td class="actions">
+                                        <button class="btn btn-sm btn-edit" onclick="Sections.applications.view(${item.id})">Prikaži</button>
+                                        <button class="btn btn-sm btn-delete" onclick="Sections.applications.delete(${item.id})">Izbriši</button>
+                                    </td>
+                                </tr>
+                            `).join('') || '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Ni prejetih prijav.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        },
+
+        async view(id) {
+            const res = await API.get('/apply');
+            const item = res.data.find(a => a.id === id);
+            const html = `
+                <div style="font-size: 14.5px; line-height: 1.6;">
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Ime in priimek:</strong> ${item.name}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">E-pošta:</strong> ${item.email}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Telefon:</strong> ${item.phone || '/'}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Datum prijave:</strong> ${new Date(item.created_at).toLocaleString('sl-SI')}</div>
+                    <div style="margin-top: 1.5rem; background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">Motivacijsko sporočilo / opombe:</strong>
+                        <p style="margin: 0; white-space: pre-wrap; color: var(--text-main);">${item.message || 'Brez sporočila.'}</p>
+                    </div>
+                </div>
+            `;
+            UI.showModal('Podrobnosti prijave', html);
+        },
+
+        async delete(id) {
+            if (confirm('Ali ste prepričani, da želite izbrisati to prijava?')) {
+                try {
+                    await API.delete(`/apply/${id}`);
+                    UI.showAlert('Prijava izbrisana');
+                    this.render(document.getElementById('content-area'));
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
+        }
+    },
+
+    messages: {
+        async render(container) {
+            const res = await API.get('/contact');
+            const items = res.data;
+            container.innerHTML = `
+                <div class="section-header">
+                    <h2>Prejeta sporočila</h2>
+                    <p style="color: var(--text-muted);">Pregled vprašanj in sporočil kontaktnega obrazca.</p>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pošiljatelj</th>
+                                <th>E-pošta</th>
+                                <th>Zadeva</th>
+                                <th>Datum</th>
+                                <th>Akcije</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${items.map(item => `
+                                <tr>
+                                    <td><strong>${item.name}</strong></td>
+                                    <td>${item.email}</td>
+                                    <td>${item.subject || '/'}</td>
+                                    <td>${new Date(item.created_at).toLocaleDateString('sl-SI')}</td>
+                                    <td class="actions">
+                                        <button class="btn btn-sm btn-edit" onclick="Sections.messages.view(${item.id})">Prikaži</button>
+                                        <button class="btn btn-sm btn-delete" onclick="Sections.messages.delete(${item.id})">Izbriši</button>
+                                    </td>
+                                </tr>
+                            `).join('') || '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Ni prejetih sporočil.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        },
+
+        async view(id) {
+            const res = await API.get('/contact');
+            const item = res.data.find(m => m.id === id);
+            const html = `
+                <div style="font-size: 14.5px; line-height: 1.6;">
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Pošiljatelj:</strong> ${item.name}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">E-pošta:</strong> ${item.email}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Zadeva:</strong> ${item.subject}</div>
+                    <div style="margin-bottom: 1rem;"><strong style="color: var(--accent);">Prejeto dne:</strong> ${new Date(item.created_at).toLocaleString('sl-SI')}</div>
+                    <div style="margin-top: 1.5rem; background: var(--bg-accent); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">Sporočilo:</strong>
+                        <p style="margin: 0; white-space: pre-wrap; color: var(--text-main);">${item.message}</p>
+                    </div>
+                </div>
+            `;
+            UI.showModal('Prejeto sporočilo', html);
+        },
+
+        async delete(id) {
+            if (confirm('Ali ste prepričani, da želite izbrisati to sporočilo?')) {
+                try {
+                    await API.delete(`/contact/${id}`);
+                    UI.showAlert('Sporočilo izbrisano');
+                    this.render(document.getElementById('content-area'));
+                } catch (err) {
+                    alert(err.message);
+                }
             }
         }
     },

@@ -254,7 +254,6 @@ const Sections = {
                             <tr>
                                 <th>Uporabniško ime</th>
                                 <th>E-pošta</th>
-                                <th>Vloga</th>
                                 <th>Akcije</th>
                             </tr>
                         </thead>
@@ -263,7 +262,6 @@ const Sections = {
                                 <tr>
                                     <td>${u.username || ''}</td>
                                     <td>${u.email}</td>
-                                    <td><span class="pill" style="background: ${u.role === 'admin' ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem;">${u.role}</span></td>
                                     <td class="actions">
                                         <button class="btn btn-sm btn-edit" onclick="Sections.users.showEditForm(${u.id})">Uredi</button>
                                         <button class="btn btn-sm btn-delete" onclick="Sections.users.delete(${u.id})">Izbriši</button>
@@ -286,13 +284,6 @@ const Sections = {
                     <div class="form-group">
                         <label>E-pošta</label>
                         <input type="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Vloga</label>
-                        <select name="role">
-                            <option value="member">Član</option>
-                            <option value="admin">Admin</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label>Geslo</label>
@@ -321,13 +312,6 @@ const Sections = {
                         <input type="email" name="email" value="${user.email}" required>
                     </div>
                     <div class="form-group">
-                        <label>Vloga</label>
-                        <select name="role">
-                            <option value="member" ${user.role === 'member' ? 'selected' : ''}>Član</option>
-                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Novo geslo (pustite prazno za nespremenjeno)</label>
                         <input type="password" name="password">
                     </div>
@@ -345,7 +329,7 @@ const Sections = {
             const data = {
                 username: formData.get('username'),
                 email: formData.get('email'),
-                role: formData.get('role'),
+                role: 'admin',
                 password: formData.get('password') || null
             };
             

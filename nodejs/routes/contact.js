@@ -3,7 +3,7 @@ import db from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
-const CONTACT_EMAIL = 'info@pgd-majsperk-breg.si';
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'info@pgd-majsperk-breg.si';
 
 router.get('/', requireAuth, (req, res) => {
     try {

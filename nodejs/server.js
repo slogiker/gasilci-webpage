@@ -1,8 +1,8 @@
+import './load-env.js';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
@@ -14,8 +14,6 @@ import applyRoutes from './routes/apply.js';
 import contactRoutes from './routes/contact.js';
 import uploadRoutes from './routes/upload.js';
 import usersRoutes from './routes/users.js';
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

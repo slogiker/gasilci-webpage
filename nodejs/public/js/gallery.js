@@ -22,18 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.success) {
                     allPhotos = result.data;
                     
-                    // Handle URL parameter ?kat=
+                    // Handle URL parameter ?kat= or ?category=
                     const urlParams = new URLSearchParams(window.location.search);
-                    const kat = urlParams.get('kat');
+                    const kat = urlParams.get('kat') || urlParams.get('category');
                     
                     if (kat) {
-                        const activeBtn = Array.from(filterBtns).find(btn => btn.dataset.category === kat);
+                        const normKat = kat.toLowerCase().replace(/\s+/g, '-');
+                        const activeBtn = Array.from(filterBtns).find(btn => {
+                            const btnCat = (btn.dataset.category || '').toLowerCase().replace(/\s+/g, '-');
+                            return btnCat === normKat;
+                        });
+                        
                         if (activeBtn) {
                             filterBtns.forEach(b => b.classList.remove('active'));
                             activeBtn.classList.add('active');
-                            filterPhotos(kat);
+                            filterPhotos(activeBtn.dataset.category);
                         } else {
-                            filterPhotos('Vse');
+                            filterPhotos(kat);
                         }
                     } else {
                         filterPhotos('Vse');
@@ -46,10 +51,15 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const filterPhotos = (category) => {
-            if (category === 'Vse') {
+            if (!category || category === 'Vse' || category.toLowerCase() === 'vse') {
                 currentFilteredPhotos = allPhotos;
             } else {
-                currentFilteredPhotos = allPhotos.filter(p => p.category === category);
+                const normCat = category.toLowerCase().replace(/\s+/g, '-');
+                currentFilteredPhotos = allPhotos.filter(p => {
+                    if (!p.category) return false;
+                    const pCat = p.category.toLowerCase().replace(/\s+/g, '-');
+                    return pCat === normCat || p.category.toLowerCase() === category.toLowerCase();
+                });
             }
             renderGallery(currentFilteredPhotos);
         };
@@ -139,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Gallery Preview Slideshow Logic ---
     const startSlideshows = () => {
-        const slideshows = document.querySelectorAll('.gallery-slideshow, .slideshow-inner');
+        const slideshows = document.querySelectorAll('.slideshow-inner');
         slideshows.forEach(slideshow => {
             const images = slideshow.querySelectorAll('img');
             if (images.length <= 1) return;

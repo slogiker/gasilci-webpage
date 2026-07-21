@@ -6,27 +6,36 @@
   --bg-border:      rgba(255,255,255,0.08);
 
   /* Brand */
-  --red:            #E03020;
-  --red-dark:       #B82518;
-  --red-glow:       rgba(224,48,32,0.15);
-  --yellow:         #F2E100;
+  --red:            #DC2828;
+  --red-dark:       #A81A1A;
+  --red-glow:       rgba(220,40,40,0.15);
+  --yellow:         #FABE28;
 
   /* Text */
   --text-primary:   #F0EFEA;
-  --text-secondary: rgba(240,239,234,0.55);
-  --text-tertiary:  rgba(240,239,234,0.30);
+  --text-secondary: rgba(240,239,234,0.75);
+  --text-tertiary:  rgba(240,239,234,0.45);
 
   /* Semantic */
   --text-on-red:    #FFFFFF;
   --text-on-yellow: #1C1C1C;
-  --font-serif: Georgia, 'Times New Roman', serif;
-  --font-sans:  system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif:     'Montserrat', sans-serif;
+  --font-sans:      'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   
-  --nav-height: 60px;
+  --nav-height: 70px;
   --sidebar-width: 280px;
 }
 
 /* Base Styles */
+html {
+  width: 100%;
+}
+
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -78,15 +87,29 @@ p {
 
 /* Navbar */
 .navbar {
-  background-color: var(--bg-elevated);
+  background-color: rgba(28, 28, 28, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--bg-border);
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 2000;
   height: var(--nav-height);
   display: flex;
   align-items: center;
   width: 100%;
+  max-width: none !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar.navbar-scrolled {
+  background-color: rgba(36, 36, 36, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(250, 190, 40, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
@@ -94,8 +117,8 @@ p {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 0 2rem;
 }
 
@@ -117,6 +140,7 @@ p {
   display: flex;
   align-items: center;
   padding: 0;
+  margin-bottom: 8px;
 }
 
 .logo a {
@@ -130,8 +154,26 @@ p {
 }
 
 .logo svg, .logo img {
-  height: 28px;
+  height: 48px;
   width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-title {
+  font-family: var(--font-serif, 'Montserrat', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .logo-title { display: none; }
+}
+
+.logo a:hover img {
+  transform: scale(1.05);
 }
 
 .nav-right {
@@ -141,7 +183,7 @@ p {
 .nav-right a {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 0.85rem;
   letter-spacing: 0.3px;
   transition: color 0.2s ease;
 }
@@ -202,6 +244,11 @@ p {
   color: var(--text-secondary);
   font-size: 1.5rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .sidebar-divider {
@@ -335,12 +382,14 @@ p {
 }
 
 /* Footer */
-footer {
+footer, .footer {
   background: var(--bg-elevated);
   color: var(--text-secondary);
   padding: 2rem 0;
-  font-size: 12.5px;
+  font-size: 0.78rem;
   border-top: 1px solid var(--bg-border);
+  width: 100% !important;
+  max-width: none !important;
 }
 
 footer a {
@@ -411,8 +460,8 @@ footer a:hover {
 /* Alert Banner */
 .alert-banner {
   height: 40px;
-  background-color: var(--red);
-  color: white;
+  background-color: var(--yellow);
+  color: var(--text-on-yellow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -421,6 +470,7 @@ footer a:hover {
   z-index: 2001;
   overflow: hidden;
   transition: margin-top 0.3s ease;
+  font-weight: 600;
 }
 
 .alert-banner-close {
@@ -428,7 +478,7 @@ footer a:hover {
   right: 1rem;
   background: none;
   border: none;
-  color: white;
+  color: var(--text-on-yellow);
   font-size: 1.2rem;
   cursor: pointer;
   line-height: 1;
@@ -500,7 +550,7 @@ footer a:hover {
 
 .stat-item {
   text-align: center;
-  border-right: 1px solid rgba(255,255,255,0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .stat-item:last-child {
@@ -519,7 +569,7 @@ footer a:hover {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
 }
 
@@ -565,16 +615,31 @@ footer a:hover {
   background: var(--bg-elevated);
   border-radius: 12px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+  cursor: pointer;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(250, 190, 40, 0.6);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(250, 190, 40, 0.2);
 }
 
 .vehicle-img {
   aspect-ratio: 16/9;
   width: 100%;
   object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+}
+
+.vehicle-card:hover .vehicle-img {
+  transform: scale(1.06);
+  filter: brightness(1.08);
 }
 
 .vehicle-info {
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .vehicle-badge {
@@ -584,12 +649,17 @@ footer a:hover {
   text-transform: uppercase;
   display: block;
   margin-bottom: 0.2rem;
+  transition: color 0.3s ease;
+}
+
+.vehicle-card:hover .vehicle-badge {
+  color: #fff;
 }
 
 .vehicle-name {
   color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 /* Members Section */
@@ -789,7 +859,7 @@ footer a:hover {
   top: 0; left: 0; width: 100%; height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1s ease;
+  transition: opacity 2.5s ease-in-out;
 }
 
 .gallery-slideshow img.active {
@@ -1159,8 +1229,12 @@ body.font-dyslexia, body.font-dyslexia * {
   font-family: 'Comic Sans MS', sans-serif !important;
 }
 
+/* Accessibility: apply grayscale on <html> NOT <body> so fixed children keep their stacking context */
+html.contrast-grayscale {
+  filter: grayscale(100%);
+}
 body.contrast-grayscale {
-  filter: grayscale(100%) !important;
+  /* intentionally empty — filter is on html */
 }
 
 body.contrast-high {
@@ -1171,6 +1245,12 @@ body.contrast-high * {
   background-color: #000000 !important;
   color: #FFFFFF !important;
   border-color: #FFFFFF !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.contrast-high img {
+  filter: contrast(120%) grayscale(100%) !important;
 }
 body.contrast-high a, body.contrast-high button {
   color: #FFFF00 !important;
@@ -1190,4 +1270,300 @@ body.disable-animations, body.disable-animations * {
   transition: none !important;
   animation: none !important;
 }
+body.disable-animations .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Legal Overlay Modals - Premium Glassmorphism */
+.legal-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.legal-modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.legal-modal-content {
+  background: rgba(36, 36, 36, 0.85);
+  border: 1px solid rgba(250, 190, 40, 0.15); /* Subtle gold border */
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6), 0 0 20px 0 rgba(220, 40, 40, 0.1); /* Subtle red-glow drop shadow */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  max-width: 750px;
+  width: 100%;
+  border-radius: 16px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2.5rem;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.legal-modal-overlay.active .legal-modal-content {
+  transform: translateY(0);
+}
+
+.legal-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.legal-modal-header h3 {
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.legal-modal-header h3 em {
+  font-style: normal;
+  color: var(--yellow); /* Gold highlight */
+}
+
+.legal-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 2.2rem;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.legal-modal-close:hover {
+  color: var(--red);
+  transform: scale(1.1);
+}
+
+.legal-modal-body {
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.legal-modal-body h4 {
+  color: var(--text-primary);
+  margin-top: 1.8rem;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  border-left: 3px solid var(--red); /* Red highlight */
+  padding-left: 0.75rem;
+}
+
+.legal-modal-body p {
+  margin-bottom: 1.2rem;
+}
+
+.legal-modal-body ul {
+  margin-bottom: 1.2rem;
+  padding-left: 1.5rem;
+}
+
+.legal-modal-body li {
+  margin-bottom: 0.6rem;
+}
+
+.legal-alert-box {
+  background: rgba(250, 190, 40, 0.08);
+  border-left: 4px solid var(--yellow);
+  padding: 1.2rem;
+  border-radius: 6px;
+  margin: 1.5rem 0;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.footer-links a:hover {
+  color: var(--yellow) !important;
+}
+
+/* Vehicle Detail Modal Overlay */
+.vehicle-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.vehicle-modal-overlay.active {
+  display: flex;
+  animation: vehicle-modal-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes vehicle-modal-fade {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.vehicle-modal-card {
+  background: rgba(36, 36, 36, 0.95);
+  border: 1px solid rgba(250, 190, 40, 0.3);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 640px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+  position: relative;
+  color: var(--text-primary);
+}
+
+.vehicle-modal-header {
+  position: relative;
+}
+
+.vehicle-modal-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.vehicle-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.vehicle-modal-close:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.vehicle-modal-body {
+  padding: 2rem;
+}
+
+.vehicle-modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.vehicle-modal-year {
+  display: inline-block;
+  background: rgba(250, 190, 40, 0.15);
+  color: var(--yellow);
+  border: 1px solid rgba(250, 190, 40, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+}
+
+.vehicle-specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.vehicle-spec-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.4rem;
+}
+
+.vehicle-spec-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.vehicle-spec-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.vehicle-spec-val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Footer Full-Width Stretch & Single Line Alignment */
+footer .container, .footer .container, .footer-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  margin: 0 !important;
+}
+
+.footer-bottom {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+}
+
+.footer-bottom p {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.footer-links {
+  white-space: nowrap !important;
+}
+
+/* Hide number input spinners (up/down arrows) */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 

@@ -21,7 +21,7 @@ if (!fs.existsSync(tempDir)) {
 // Configure multer upload to temp directory
 const upload = multer({ 
     dest: tempDir,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
 const uploadsDir = path.join(__dirname, '../public/uploads');
@@ -38,41 +38,114 @@ router.get('/', (req, res) => {
     }
 });
 
-router.post('/', requireAuth, upload.single('image'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, error: 'No image uploaded' });
+router.post('/', requireAuth, (req, res, next) => {
+    upload.any()(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err.message || 'Upload error' });
+        }
+        next();
+    });
+}, async (req, res) => {
+    const files = req.files || [];
+    if (files.length === 0) {
+        return res.status(400).json({ success: false, error: 'No images uploaded' });
     }
 
     const { title, category } = req.body;
-    const tempPath = req.file.path;
-    const ext = path.extname(req.file.originalname) || '.jpg';
-    const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;
-    const targetPath = path.join(uploadsDir, filename);
+    const insertedIds = [];
 
     try {
-        // Resize with sharp if width > 1200
-        const image = sharp(tempPath);
-        const metadata = await image.metadata();
-        
-        if (metadata.width && metadata.width > 1200) {
-            await image.resize({ width: 1200 }).toFile(targetPath);
-        } else {
-            await fs.promises.copyFile(tempPath, targetPath);
-        }
-        
-        // Clean up temp file
-        await fs.promises.unlink(tempPath);
-
         const stmt = db.prepare('INSERT INTO gallery (title, image_path, category) VALUES (?, ?, ?)');
-        const info = stmt.run(title || '', 'api/uploads/' + filename, category || '');
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const tempPath = file.path;
+            const ext = path.extname(file.originalname) || '.jpg';
+            const filename = `${Date.now()}-${i}-${Math.round(Math.random() * 1E9)}${ext}`;
+            const targetPath = path.join(uploadsDir, filename);
 
-        res.json({ success: true, data: { id: info.lastInsertRowid } });
-    } catch (err) {
-        // Clean up temp file in case of error
-        if (fs.existsSync(tempPath)) {
-            await fs.promises.unlink(tempPath).catch(() => {});
+            try {
+                const image = sharp(tempPath);
+                const metadata = await image.metadata();
+                
+                if (metadata.width && metadata.width > 1200) {
+                    await image.resize({ width: 1200 }).toFile(targetPath);
+                } else {
+                    await fs.promises.copyFile(tempPath, targetPath);
+                }
+                
+                await fs.promises.unlink(tempPath).catch(() => {});
+
+                const baseName = path.basename(file.originalname, ext);
+                const fileTitle = (files.length === 1 && title && title.trim()) 
+                    ? title.trim() 
+                    : (title && title.trim() ? `${title.trim()} (${i+1})` : baseName);
+
+                const info = stmt.run(fileTitle, 'uploads/' + filename, category || '');
+                insertedIds.push(info.lastInsertRowid);
+            } catch (err) {
+                if (fs.existsSync(tempPath)) {
+                    await fs.promises.unlink(tempPath).catch(() => {});
+                }
+                console.error('Error processing file in batch upload:', err);
+            }
         }
-        res.status(500).json({ success: false, error: 'Failed to process image: ' + err.message });
+
+        res.json({ success: true, count: insertedIds.length, data: { ids: insertedIds } });
+    } catch (err) {
+        res.status(500).json({ success: false, error: 'Failed to process images: ' + err.message });
+    }
+});
+
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    try {
+        const item = db.prepare('SELECT * FROM gallery WHERE id = ?').get(id);
+        if (!item) return res.status(404).json({ success: false, error: 'Image not found' });
+        res.json({ success: true, data: item });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
+    const { id } = req.params;
+    const { title, category } = req.body;
+
+    try {
+        const item = db.prepare('SELECT * FROM gallery WHERE id = ?').get(id);
+        if (!item) return res.status(404).json({ success: false, error: 'Image not found' });
+
+        let image_path = item.image_path;
+
+        if (req.file) {
+            const tempPath = req.file.path;
+            const ext = path.extname(req.file.originalname) || '.jpg';
+            const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;
+            const targetPath = path.join(uploadsDir, filename);
+
+            const image = sharp(tempPath);
+            const metadata = await image.metadata();
+            
+            if (metadata.width && metadata.width > 1200) {
+                await image.resize({ width: 1200 }).toFile(targetPath);
+            } else {
+                await fs.promises.copyFile(tempPath, targetPath);
+            }
+            
+            await fs.promises.unlink(tempPath).catch(() => {});
+            image_path = 'uploads/' + filename;
+        }
+
+        const stmt = db.prepare('UPDATE gallery SET title = ?, category = ?, image_path = ? WHERE id = ?');
+        stmt.run(title || '', category || '', image_path, id);
+
+        res.json({ success: true, data: 'Updated successfully' });
+    } catch (err) {
+        if (req.file && fs.existsSync(req.file.path)) {
+            await fs.promises.unlink(req.file.path).catch(() => {});
+        }
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -84,7 +157,6 @@ router.delete('/:id', requireAuth, async (req, res) => {
             return res.status(404).json({ success: false, error: 'Image not found' });
         }
 
-        // Remove file path api/uploads/ -> public/uploads/
         const filename = path.basename(item.image_path);
         const fullPath = path.join(uploadsDir, filename);
         

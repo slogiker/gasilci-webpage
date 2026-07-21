@@ -28,14 +28,15 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', requireAuth, (req, res) => {
-    const { name, rank, role, image } = req.body;
+    const { name, rank, role, image, vulkan_id } = req.body;
     try {
-        const stmt = db.prepare('INSERT INTO members (name, rank, role, image) VALUES (?, ?, ?, ?)');
+        const stmt = db.prepare('INSERT INTO members (name, rank, role, image, vulkan_id) VALUES (?, ?, ?, ?, ?)');
         const info = stmt.run(
             name || '',
             rank || '',
             role || '',
-            image || null
+            image || null,
+            vulkan_id || ''
         );
         res.json({ success: true, data: { id: info.lastInsertRowid } });
     } catch (err) {
@@ -45,14 +46,15 @@ router.post('/', requireAuth, (req, res) => {
 
 router.put('/:id', requireAuth, (req, res) => {
     const { id } = req.params;
-    const { name, rank, role, image } = req.body;
+    const { name, rank, role, image, vulkan_id } = req.body;
     try {
-        const stmt = db.prepare('UPDATE members SET name = ?, rank = ?, role = ?, image = ? WHERE id = ?');
+        const stmt = db.prepare('UPDATE members SET name = ?, rank = ?, role = ?, image = ?, vulkan_id = ? WHERE id = ?');
         stmt.run(
             name || '',
             rank || '',
             role || '',
             image || null,
+            vulkan_id || '',
             id
         );
         res.json({ success: true, data: 'Updated successfully' });

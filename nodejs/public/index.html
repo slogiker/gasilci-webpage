@@ -20,12 +20,12 @@
     </div>
 
     <nav class="navbar">
-        <div class="container nav-container">
+        <div class="nav-container">
             <div class="nav-left">
                 <div class="logo">
                     <a href="index.html">
-                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
-                        <span>PGD Majšperk Breg</span>
+                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo">
+                        <span class="logo-title">PGD Majšperk Breg</span>
                     </a>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                 <a href="galerija.html">Galerija</a>
                 <a href="index.html#vozila">Garaža</a>
                 <a href="index.html#kontakt">Kontakt</a>
-                <button class="hamburger" id="sidebar-toggle" aria-label="Meni">☰</button>
+                <button class="hamburger" id="sidebar-toggle" aria-label="Meni" style="margin-bottom: 8px;">&#9776;</button>
             </div>
         </div>
     </nav>
@@ -47,9 +47,9 @@
                     <!-- Slide 1 -->
                     <div class="slide active" style="background-image: url('https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD');">
                         <div class="container">
-                            <span class="hero-tag">Prostovoljno gasilsko društvo</span>
-                            <h1>Skupaj varujemo <em>našo skupnost.</em></h1>
-                            <p class="hero-subtitle">Ponosna tradicija od leta 1947. Vedno pripravljeni na pomoč vsem občanom.</p>
+                            <span class="hero-tag">INTERVENCIJE & REŠEVANJE</span>
+                            <h1>Ko se drugi umikajo, gasilci <em>stopimo naprej.</em></h1>
+                            <p class="hero-subtitle">Na klic na pomoč se odzovemo nemudoma, 24 ur na dan, vse dni v letu.</p>
                             <div class="hero-btns">
                                 <a href="#o-nas" class="btn btn-red">Izvedite več</a>
                                 <a href="#kontakt" class="btn btn-outline">Kontakt</a>
@@ -59,9 +59,9 @@
                     <!-- Slide 2 -->
                     <div class="slide" style="background-image: url('https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD');">
                         <div class="container">
-                            <span class="hero-tag">Tekmovanja SSV</span>
-                            <h1>Pripravljeni na <em>vsak izziv.</em></h1>
-                            <p class="hero-subtitle">Z rednimi vajami in tekmovanji skrbimo za visoko stopnjo pripravljenosti naših članov.</p>
+                            <span class="hero-tag">VAJE IN USPOSABLJANJE</span>
+                            <h1>Uspeh na intervenciji se gradi <em>na vajah.</em></h1>
+                            <p class="hero-subtitle">Z rednim usposabljanjem in sodobno opremo zagotavljamo visoko pripravljenost za vsako nesrečo.</p>
                             <div class="hero-btns">
                                 <a href="galerija.html" class="btn btn-red">Naša galerija</a>
                             </div>
@@ -70,9 +70,9 @@
                     <!-- Slide 3 -->
                     <div class="slide" style="background-image: url('https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD');">
                         <div class="container">
-                            <span class="hero-tag">Od leta 1947</span>
-                            <h1>Tradicija, ponos, <em>skupnost.</em></h1>
-                            <p class="hero-subtitle">Več kot 75 let povezujemo generacije in skrbimo za požarno varnost v našem kraju.</p>
+                            <span class="hero-tag">TRADICIJA & PRIPADNOST</span>
+                            <h1>Naš pogum je <em>vaša varnost.</em></h1>
+                            <p class="hero-subtitle">Prostovoljno gasilsko društvo Majšperk-Breg varuje življenja in premoženje občanov že od leta 1947.</p>
                             <div class="hero-btns">
                                 <a href="#o-nas" class="btn btn-outline">O nas</a>
                             </div>
@@ -278,9 +278,8 @@
                     
                     <div class="gallery-grid">
                         <div class="gallery-card" onclick="window.location.href='galerija.html?kat=tekmovanje'">
-                            <div class="gallery-slideshow">
+                            <div class="gallery-slideshow" data-category="tekmovanje">
                                 <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD" class="active">
-                                <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD">
                             </div>
                             <div class="gallery-overlay">
                                 <span class="gallery-cat-name">Tekmovanja</span>
@@ -289,9 +288,8 @@
                         </div>
                         
                         <div class="gallery-card" onclick="window.location.href='galerija.html?kat=vaje'">
-                            <div class="gallery-slideshow">
+                            <div class="gallery-slideshow" data-category="vaje">
                                 <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD" class="active">
-                                <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD">
                             </div>
                             <div class="gallery-overlay">
                                 <span class="gallery-cat-name">Vaje</span>
@@ -300,9 +298,8 @@
                         </div>
                         
                         <div class="gallery-card" onclick="window.location.href='galerija.html?kat=prosti-cas'">
-                            <div class="gallery-slideshow">
+                            <div class="gallery-slideshow" data-category="prosti-cas">
                                 <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD" class="active">
-                                <img src="https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD">
                             </div>
                             <div class="gallery-overlay">
                                 <span class="gallery-cat-name">Prosti čas</span>
@@ -332,12 +329,20 @@
                                 <p style="margin: 0; color: var(--text-tertiary);">Tu bo vgrajen uradni obrazec za namenitev dela dohodnine.</p>
                             </div>
                         </div>
-                        <button class="btn btn-outline toggle-donation-mode" data-target="mode-direct">
-                            Raje doniram direktno &rarr;
-                        </button>
+                        <!-- 
+                            [DOCUMENTED FEATURE - DIRECT DONATION MODE]
+                            To re-enable direct donations, uncomment the button below and the #mode-direct section.
+                            
+                            <button class="btn btn-outline toggle-donation-mode" data-target="mode-direct">
+                                Raje doniram direktno &rarr;
+                            </button>
+                        -->
                     </div>
             
-                    <!-- Mode 2: Direktna donacija -->
+                    <!-- 
+                        [DOCUMENTED FEATURE - DIREKTNA DONACIJA SECTION]
+                        Uncomment to restore direct bank transfer & custom donation amount selector.
+
                     <div class="donation-mode" id="mode-direct" style="display:none">
                         <p class="donation-desc" style="margin-bottom: 2rem;">Izberite znesek ali vpišite poljubni znesek donacije.</p>
                         <div class="amount-presets" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;">
@@ -346,9 +351,8 @@
                             <button class="btn btn-outline amount-btn custom-trigger">Po meri</button>
                         </div>
                         <div class="custom-amount" id="custom-amount" style="display:none; margin-bottom: 1.5rem;">
-                            <input type="number" min="1" placeholder="Vnesite znesek v €" class="amount-input" style="padding: 0.75rem; border-radius: 6px; border: 1px solid var(--bg-border); background: var(--bg-subtle); color: var(--text-primary); text-align: center; width: 200px;" />
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" min="1" placeholder="Vnesite znesek v €" class="amount-input" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="padding: 0.75rem; border-radius: 6px; border: 1px solid var(--bg-border); background: var(--bg-subtle); color: var(--text-primary); text-align: center; width: 200px;" />
                         </div>
-                        <!-- Bank transfer info -->
                         <div class="bank-info todo" title="TODO: preveriti IBAN" style="background: var(--bg-subtle); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; text-align: left; display: inline-block; text-align: center;">
                             <span style="display: block; font-weight: bold; color: var(--text-primary); margin-bottom: 0.5rem;">Nakazilo na: SI56 XXXX XXXX XXXX XXX</span>
                             <span style="display: block; color: var(--text-secondary);">Namen: Donacija PGD Majšperk Breg</span>
@@ -359,6 +363,7 @@
                             </button>
                         </div>
                     </div>
+                    -->
             
                 </div>
             </section>
@@ -413,11 +418,8 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <a href="index.html">
-                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
-                        <span style="color: var(--text-primary); font-weight: bold; font-size: 1.1rem;">PGD Majšperk Breg</span>
-                    </a>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 0.5rem 0;">
+                    <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 64px; width: auto;">
                 </div>
                 <button class="sidebar-close" id="sidebar-close">&times;</button>
             </div>
@@ -437,12 +439,19 @@
             <div class="sidebar-divider"></div>
         
             <div class="sidebar-footer">
-                <a href="admin/index.html" class="btn btn-red w-full">Prijava</a>
+                <a href="admin/index.html" class="btn btn-red w-full" style="margin-bottom: 1rem;">Prijava</a>
                 
-                <div class="sidebar-social">
-                    <a href="https://facebook.com" target="_blank" aria-label="Facebook">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <div class="sidebar-social" style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                    <a href="https://www.facebook.com/pgdmajsperkbreg/" target="_blank" aria-label="Facebook" style="color: var(--text-secondary); transition: color 0.2s;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                             <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/pgdmajsperkbreg/" target="_blank" aria-label="Instagram" style="color: var(--text-secondary); transition: color 0.2s;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <circle cx="12" cy="12" r="3.5"></circle>
+                            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"></circle>
                         </svg>
                     </a>
                 </div>
@@ -470,10 +479,21 @@
                     <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Kontakt</h4>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Breg 4, 2322 Majšperk<br>Email: info@pgd-majsperk.si<br>Tel: 02 795 00 00</p>
                 </div>
-                <div class="footer-col">
+                <div class="footer-col" style="text-align: center;">
                     <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Sledi nam</h4>
-                    <div class="social-links" style="display: flex; gap: 1rem;">
-                        <a href="https://facebook.com/pgdmajsperk" style="color: var(--text-secondary); text-decoration: none;">Facebook</a>
+                    <div class="social-links" style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                        <a href="https://www.facebook.com/pgdmajsperkbreg/" target="_blank" aria-label="Facebook" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; justify-content: center; transition: color 0.2s;">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/pgdmajsperkbreg/" target="_blank" aria-label="Instagram" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; justify-content: center; transition: color 0.2s;">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <circle cx="12" cy="12" r="3.5"></circle>
+                                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"></circle>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -482,12 +502,116 @@
                 <p>&copy; 2024 PGD Majšperk Breg. <span>Vse pravice pridržane.</span></p>
                 <p class="creator-link">Made by <a href="https://slogiker.si" target="_blank" rel="noopener" style="color: var(--text-secondary);">slogiker</a></p>
                 <div class="footer-links" style="display: flex; gap: 1rem;">
-                    <span style="color: var(--text-secondary);">Pravno obvestilo</span>
-                    <span style="color: var(--text-secondary);">Varstvo podatkov</span>
+                    <a href="index.html?open=pravno" id="pravno-link" style="color: var(--text-secondary); text-decoration: none; cursor: pointer; transition: color 0.2s;">Pravno obvestilo</a>
+                    <a href="index.html?open=varstvo" id="varstvo-link" style="color: var(--text-secondary); text-decoration: none; cursor: pointer; transition: color 0.2s;">Varstvo podatkov</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Vehicle Detail Modal -->
+    <div id="vehicle-modal" class="vehicle-modal-overlay">
+        <div class="vehicle-modal-card">
+            <div class="vehicle-modal-header">
+                <img id="v-modal-img" src="" alt="Vozilo" class="vehicle-modal-img">
+                <button class="vehicle-modal-close" id="v-modal-close">&times;</button>
+            </div>
+            <div class="vehicle-modal-body">
+                <h3 id="v-modal-title" class="vehicle-modal-title"></h3>
+                <span id="v-modal-year" class="vehicle-modal-year"></span>
+                <div id="v-modal-specs" class="vehicle-specs-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div id="event-modal" class="vehicle-modal-overlay">
+        <div class="vehicle-modal-card">
+            <div class="vehicle-modal-header">
+                <img id="e-modal-img" src="" alt="Dogodek" class="vehicle-modal-img">
+                <button class="vehicle-modal-close" id="e-modal-close">&times;</button>
+            </div>
+            <div class="vehicle-modal-body">
+                <h3 id="e-modal-title" class="vehicle-modal-title"></h3>
+                <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem; flex-wrap: wrap; align-items: center;">
+                    <span id="e-modal-date" class="vehicle-modal-year" style="margin-bottom: 0; background: rgba(250, 190, 40, 0.15); color: var(--yellow);"></span>
+                    <span id="e-modal-location" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+                </div>
+                <p id="e-modal-desc" style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.6; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 1.25rem; border-radius: 8px; margin: 0;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pravno Obvestilo Modal -->
+    <div id="pravno-modal" class="legal-modal-overlay">
+        <div class="legal-modal-content">
+            <div class="legal-modal-header">
+                <h3>Pravno <em>obvestilo</em></h3>
+                <button class="legal-modal-close" id="pravno-close">&times;</button>
+            </div>
+            <div class="legal-modal-body">
+                <p>Dobrodošli na uradni spletni strani Prostovoljnega gasilskega društva Majšperk-Breg. Z uporabo te spletne strani potrjujete, da ste seznanjeni s spodnjimi pogoji uporabe in se z njimi strinjate.</p>
+                
+                <h4>1. Podatki o upravljavcu</h4>
+                <p>Spletno mesto na naslovu <strong>pgd-majsperk.si</strong> upravlja:<br>
+                <strong>Prostovoljno gasilsko društvo Majšperk-Breg</strong><br>
+                Breg 4, 2322 Majšperk<br>
+                E-pošta: pgdmajsperkbreg@gmail.com / info@pgd-majsperk.si<br>
+                Zakoniti zastopnik: Zlatko Letonja (Predsednik)</p>
+                
+                <h4>2. Omejitev odgovornosti</h4>
+                <p>Vse informacije in podatki na tej spletni strani so informativne narave. PGD Majšperk-Breg se trudi zagotavljati točnost in ažurnost objavljenih podatkov, vendar ne prevzema nikakršne odgovornosti (odškodninske ali drugačne) za morebitne napake, nepopolnosti ali začasno nedelovanje spletnega mesta.</p>
+                <p>Tako PGD Majšperk-Breg kot katera koli druga pravna ali fizična oseba, ki je sodelovala pri ustvarjanju te spletne strani, ne odgovarja za nobeno škodo, ki bi izhajala iz dostopa do spletne strani, uporabe ali nezmožnosti uporabe informacij na spletni strani ali morebitnih napak v njihovi vsebini.</p>
+                
+                <h4>3. Avtorske pravice</h4>
+                <p>Vsa gradiva, besedila, slike, grafike, logotipi in drugi elementi na tem spletnem mestu so predmet avtorske zaščite ali drugih oblik zaščite intelektualne lastnine. Brez izrecnega pisnega dovoljenja upravljavca je prepovedano kakršno koli kopiranje, razmnoževanje, prepisovanje ali razširjanje teh gradiv v komercialne namene.</p>
+                
+                <h4>4. Zunanje povezave</h4>
+                <p>Naša spletna stran lahko vsebuje povezave do drugih spletnih mest (npr. SPIN SOS112, RIS POCSAG112). PGD Majšperk-Breg nima nadzora nad vsebino ali politiko zasebnosti teh zunanjih strani in ne prevzema odgovornosti za njihovo delovanje, vsebino ali varnost.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Varstvo Podatkov Modal -->
+    <div id="varstvo-modal" class="legal-modal-overlay">
+        <div class="legal-modal-content">
+            <div class="legal-modal-header">
+                <h3>Varstvo <em>podatkov</em></h3>
+                <button class="legal-modal-close" id="varstvo-close">&times;</button>
+            </div>
+            <div class="legal-modal-body">
+                <p>V Prostovoljnem gasilskem društvu Majšperk-Breg spoštujemo vašo zasebnost in se zavezujemo k skrbnemu varovanju osebnih podatkov v skladu z Splošno uredbo o varstvu podatkov (GDPR) in veljavno zakonodajo o varstvu osebnih podatkov v Republiki Sloveniji.</p>
+                
+                <h4>1. Osebni podatki in kontaktni obrazec</h4>
+                <p>Ob izpolnitvi kontaktnega obrazca na naši spletni strani zbiramo naslednje osebne podatke, ki jih vpišete prostovoljno:</p>
+                <ul>
+                    <li>Ime in priimek</li>
+                    <li>E-poštni naslov</li>
+                    <li>Vsebina vašega sporočila</li>
+                </ul>
+                <p>Te podatke uporabljamo izključno za namen komunikacije z vami (odgovarjanje na vaša vprašanja, povpraševanja glede vpisa ali najema dvorane). Podatkov ne posredujemo tretjim osebam in jih ne uporabljamo v marketinške namene.</p>
+                
+                <h4>2. Uporaba piškotkov</h4>
+                <p>Piškotki so majhne besedilne datoteke, ki jih spletna mesta shranijo v vašo napravo ob obisku z namenom prepoznavanja naprave in izboljšanja uporabniške izkušnje.</p>
+                <p>Trenutno naša spletna stran uporablja le nujne sejne podatke (Session Storage), ki omogočajo nemoteno navigacijo, delovanje obrazcev in delovanje preklopa donacijskih načinov.</p>
+                
+                <h4>3. Piškotki za analitiko in statistiko</h4>
+                <div class="legal-alert-box">
+                    <strong>Obvestilo o prihodnji uporabi:</strong> Za namene optimizacije, spremljanja obiskanosti in dolgoročnega izboljšanja delovanja spletne strani nameravamo v prihodnosti uvesti analitične in statistične piškotke (npr. Google Analytics). Pred njihovo namestitvijo bomo na spletno mesto dodali ustrezno privolitveno vrstico, kjer se boste lahko sami odločili, ali dovolite njihovo uporabo.
+                </div>
+                
+                <h4>4. Vaše pravice</h4>
+                <p>Glede svojih osebnih podatkov imate kadarkoli pravico zahtevati:</p>
+                <ul>
+                    <li>Dostop do svojih osebnih podatkov</li>
+                    <li>Popravek netočnih podatkov</li>
+                    <li>Izbris podatkov (pravica do pozabe)</li>
+                    <li>Omejitev obdelave ali ugovor obdelavi</li>
+                </ul>
+                <p>Za uveljavljanje teh pravic ali v primeru vprašanj nam pišite na naš e-poštni naslov <strong>pgdmajsperkbreg@gmail.com</strong>.</p>
+            </div>
+        </div>
+    </div>
 
     <script src="js/api.js"></script>
     <script src="js/main.js"></script>

@@ -18,6 +18,49 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('sl-SI', { day: 'numeric', month: 'short' });
     }
 
+    const eventModal = document.getElementById('event-modal');
+    const closeEventModalBtn = document.getElementById('e-modal-close');
+
+    function openEventModal(event) {
+        if (!eventModal) return;
+        const imgEl = document.getElementById('e-modal-img');
+        const titleEl = document.getElementById('e-modal-title');
+        const dateEl = document.getElementById('e-modal-date');
+        const locEl = document.getElementById('e-modal-location');
+        const descEl = document.getElementById('e-modal-desc');
+
+        const imgSrc = event.image ? (event.image.startsWith('http') || event.image.startsWith('/') ? event.image : '/' + event.image) : 'https://placehold.co/800x450/1C1C1C/F0EFEA?text=PGD+Majšperk';
+
+        if (imgEl) imgEl.src = imgSrc;
+        if (titleEl) titleEl.textContent = event.title;
+        if (dateEl) {
+            const d = event.event_date ? new Date(event.event_date) : null;
+            dateEl.textContent = d ? d.toLocaleDateString('sl-SI', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Datum ni določen';
+        }
+        if (locEl) locEl.innerHTML = event.location ? `📍 ${event.location}` : '';
+        if (descEl) descEl.textContent = event.description || 'Za ta dogodek ni dodatnega opisa.';
+
+        eventModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEventModal() {
+        if (eventModal) {
+            eventModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    if (closeEventModalBtn) closeEventModalBtn.onclick = closeEventModal;
+    if (eventModal) {
+        eventModal.onclick = (e) => {
+            if (e.target === eventModal) closeEventModal();
+        };
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeEventModal();
+    });
+
     async function renderWeek(offset) {
         const startOfWeek = getStartOfWeek(offset);
         const endOfWeek = new Date(startOfWeek);
@@ -63,7 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayEvents.forEach(event => {
                     const eventEl = document.createElement('div');
                     eventEl.className = 'cal-event';
-                    eventEl.textContent = event.title;
+                    eventEl.style.cursor = 'pointer';
+                    
+                    if (event.image) {
+                        const imgSrc = event.image.startsWith('http') || event.image.startsWith('/') ? event.image : '/' + event.image;
+                        eventEl.innerHTML = `
+                            <img src="${imgSrc}" style="width: 100%; height: 48px; object-fit: cover; border-radius: 4px; margin-bottom: 0.3rem; display: block;">
+                            <span style="font-weight: 600; display: block; line-height: 1.2;">${event.title}</span>
+                        `;
+                    } else {
+                        eventEl.textContent = event.title;
+                    }
+
+                    eventEl.addEventListener('click', () => openEventModal(event));
                     dayBody.appendChild(eventEl);
                 });
 

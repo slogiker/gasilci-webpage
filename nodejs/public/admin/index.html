@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Prijava - PGD Majšperk Breg</title>
+    <link rel="icon" href="../img/logo-omre.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,62 +19,131 @@
         }
         .toast {
             position: fixed; bottom: 2rem; right: 2rem;
-            background: var(--bg-elevated); color: var(--text-primary);
+            background: var(--bg-elevated, #2a2a2a); color: var(--text-primary, #f0efea);
             padding: 0.85rem 1.25rem; border-radius: 8px;
             border-left: 3px solid var(--red);
             font-size: 13.5px; z-index: 9999;
             transform: translateY(20px); opacity: 0;
             transition: all 0.3s ease;
+            max-width: 320px;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.toast-success { border-left-color: #3a9e5f; }
-        .login-main { min-height: calc(100vh - 60px - 100px); display: flex; align-items: center; justify-content: center; }
+
+        /* Login page — full viewport, no scroll */
+        body.login-page {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.login-page .login-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 2rem;
+        }
+        /* Logo glow using filter (works with transparent PNGs) */
+        .login-logo-img {
+            height: 90px;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 18px rgba(220, 40, 40, 0.55)) drop-shadow(0 0 6px rgba(250, 190, 40, 0.3));
+        }
     </style>
 </head>
-<body>
+<body class="login-page">
     <nav class="navbar">
-        <div class="container nav-container">
+        <div class="nav-container">
             <div class="nav-left">
                 <div class="logo">
                     <a href="../index.html">
-                        <img src="../img/logo-omre.png" alt="PGD Logo" style="height: 28px;">
-                        <span>PGD Majšperk Breg</span>
+                        <img src="../img/logo-omre.png" alt="PGD Majšperk Breg Logo">
+                        <span class="logo-title">PGD Majšperk Breg</span>
                     </a>
                 </div>
             </div>
+
+            <div class="nav-right">
+                <a href="../novice.html">Novice</a>
+                <a href="../galerija.html">Galerija</a>
+                <a href="../index.html#vozila">Garaža</a>
+                <a href="../index.html#kontakt">Kontakt</a>
+                <button class="hamburger" id="sidebar-toggle" aria-label="Meni" style="margin-bottom: 8px;">&#9776;</button>
+            </div>
         </div>
     </nav>
+    
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 0.5rem 0;">
+                <img src="../img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 64px; width: auto;">
+            </div>
+            <button class="sidebar-close" id="sidebar-close">&times;</button>
+        </div>
+    
+        <div class="sidebar-divider"></div>
+    
+        <nav class="sidebar-links">
+            <a href="../index.html">Domov</a>
+            <a href="../novice.html">Novice</a>
+            <a href="../galerija.html">Galerija</a>
+            <a href="../index.html#vozila">Garaža</a>
+            <a href="../index.html#dogodki">Dogodki</a>
+            <a href="../index.html#o-nas">O nas</a>
+            <a href="../index.html#kontakt">Kontakt</a>
+        </nav>
+    
+        <div class="sidebar-divider"></div>
+    
+        <div class="sidebar-footer">
+            <a href="index.html" class="btn btn-red w-full" style="margin-bottom: 1rem;">Prijava</a>
+            
+            <div class="sidebar-social" style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                <a href="https://www.facebook.com/pgdmajsperkbreg/" target="_blank" aria-label="Facebook" style="color: var(--text-secondary); transition: color 0.2s;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/pgdmajsperkbreg/" target="_blank" aria-label="Instagram" style="color: var(--text-secondary); transition: color 0.2s;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <circle cx="12" cy="12" r="3.5"></circle>
+                        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </aside>
 
     <main class="login-main">
-        <div class="login-container" style="padding: 2rem;">
-            <div class="login-card" style="max-width: 500px;">
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <img src="../img/logo-omre.png" alt="PGD Logo" style="height: 100px; margin-bottom: 1rem;">
-                    <h1 style="color: var(--red); font-family: var(--font-serif); margin-bottom: 0.5rem; font-size: 2.5rem;">Admin prijava</h1>
-                    <p style="color: var(--text-secondary);">Administracija spletne strani</p>
-                </div>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label for="email" style="color: var(--yellow);">E-pošta ali uporabniško ime</label>
-                        <input type="text" id="email" name="email" required placeholder="vnesite e-pošto ali uporabniško ime">
-                    </div>
-                    <div class="form-group">
-                        <label for="password" style="color: var(--yellow);">Geslo</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="password" name="password" required placeholder="vnesite geslo">
-                            <button type="button" class="eye-toggle" onclick="togglePassword()">👁</button>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-red" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">Prijava</button>
-                </form>
+        <div class="login-card">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <img src="../img/logo-omre.png" alt="PGD Logo" class="login-logo-img">
+                <h1>Admin prijava</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Nadzorna plošča PGD Majšperk Breg</p>
             </div>
+            <form id="login-form" method="post" action="#">
+                <div class="form-group">
+                    <label for="email">E-pošta ali uporabniško ime</label>
+                    <input type="text" id="email" name="email" required placeholder="Vnesite e-pošto ali uporabniško ime" autocomplete="username">
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="password">Geslo</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" required placeholder="Vnesite geslo" autocomplete="current-password">
+                        <button type="button" class="eye-toggle" onclick="togglePassword()">👁</button>
+                    </div>
+                </div>
+                <div id="login-alert" style="display:none; color: var(--red, #DC2828); font-size: 0.9rem; margin-bottom: 1rem; padding: 0.5rem; border-radius: 6px; background: rgba(220,40,40,0.08);"></div>
+                <button type="submit" class="btn btn-red" style="width: 100%; padding: 0.85rem; font-size: 1rem;">Prijava</button>
+            </form>
         </div>
     </main>
 
-    <footer style="text-align: center; padding: 2rem; border-top: 1px solid var(--bg-border);">
-        <p style="font-size: 0.85rem; color: var(--text-tertiary);">&copy; 2024 PGD Majšperk Breg. Vse pravice pridržane.</p>
-    </footer>
-
+    <script src="../js/main.js"></script>
     <script src="js/admin.js"></script>
     <script>
         function togglePassword() {

@@ -39,7 +39,7 @@ public/api/uploads/*
 !public/api/uploads/.gitkeep
 
 # Node.js uploads
-nodejs/public/uploads/*
-!nodejs/public/uploads/.gitkeep
+# nodejs/public/uploads/*
+# !nodejs/public/uploads/.gitkeep
 nodejs/temp_uploads/
 

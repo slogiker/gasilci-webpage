@@ -13,12 +13,12 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="container nav-container">
+        <div class="nav-container">
             <div class="nav-left">
                 <div class="logo">
                     <a href="index.html">
-                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
-                        <span>PGD Majšperk Breg</span>
+                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo">
+                        <span class="logo-title">PGD Majšperk Breg</span>
                     </a>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 <a href="galerija.html">Galerija</a>
                 <a href="index.html#vozila">Garaža</a>
                 <a href="index.html#kontakt">Kontakt</a>
-                <button class="hamburger" id="sidebar-toggle" aria-label="Meni">☰</button>
+                <button class="hamburger" id="sidebar-toggle" aria-label="Meni" style="margin-bottom: 8px;">&#9776;</button>
             </div>
         </div>
     </nav>
@@ -64,11 +64,8 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <a href="index.html">
-                        <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 28px;">
-                        <span style="color: var(--text-primary); font-weight: bold; font-size: 1.1rem;">PGD Majšperk Breg</span>
-                    </a>
+                <div style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 0.5rem 0;">
+                    <img src="img/logo-omre.png" alt="PGD Majšperk Breg Logo" style="height: 64px; width: auto;">
                 </div>
                 <button class="sidebar-close" id="sidebar-close">&times;</button>
             </div>
@@ -88,12 +85,19 @@
             <div class="sidebar-divider"></div>
         
             <div class="sidebar-footer">
-                <a href="admin/index.html" class="btn btn-red w-full">Prijava</a>
+                <a href="admin/index.html" class="btn btn-red w-full" style="margin-bottom: 1rem;">Prijava</a>
                 
-                <div class="sidebar-social">
-                    <a href="https://facebook.com" target="_blank" aria-label="Facebook">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <div class="sidebar-social" style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                    <a href="https://www.facebook.com/pgdmajsperkbreg/" target="_blank" aria-label="Facebook" style="color: var(--text-secondary); transition: color 0.2s;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                             <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/pgdmajsperkbreg/" target="_blank" aria-label="Instagram" style="color: var(--text-secondary); transition: color 0.2s;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <circle cx="12" cy="12" r="3.5"></circle>
+                            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"></circle>
                         </svg>
                     </a>
                 </div>
@@ -131,10 +135,21 @@
                     <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Kontakt</h4>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">Breg 4, 2322 Majšperk<br>Email: info@pgd-majsperk.si<br>Tel: 02 795 00 00</p>
                 </div>
-                <div class="footer-col">
+                <div class="footer-col" style="text-align: center;">
                     <h4 style="color: var(--text-primary); margin-bottom: 1rem;">Sledi nam</h4>
-                    <div class="social-links" style="display: flex; gap: 1rem;">
-                        <a href="https://facebook.com/pgdmajsperk" style="color: var(--text-secondary); text-decoration: none;">Facebook</a>
+                    <div class="social-links" style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="https://www.facebook.com/pgdmajsperkbreg/" target="_blank" aria-label="Facebook" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; transition: color 0.2s;">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/pgdmajsperkbreg/" target="_blank" aria-label="Instagram" style="color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; transition: color 0.2s;">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <circle cx="12" cy="12" r="3.5"></circle>
+                                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"></circle>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -143,8 +158,8 @@
                 <p>&copy; 2024 PGD Majšperk Breg. <span>Vse pravice pridržane.</span></p>
                 <p class="creator-link">Made by <a href="https://slogiker.si" target="_blank" rel="noopener" style="color: var(--text-secondary);">slogiker</a></p>
                 <div class="footer-links" style="display: flex; gap: 1rem;">
-                    <span style="color: var(--text-secondary);">Pravno obvestilo</span>
-                    <span style="color: var(--text-secondary);">Varstvo podatkov</span>
+                    <a href="index.html?open=pravno" id="pravno-link" style="color: var(--text-secondary); text-decoration: none; cursor: pointer; transition: color 0.2s;">Pravno obvestilo</a>
+                    <a href="index.html?open=varstvo" id="varstvo-link" style="color: var(--text-secondary); text-decoration: none; cursor: pointer; transition: color 0.2s;">Varstvo podatkov</a>
                 </div>
             </div>
         </div>

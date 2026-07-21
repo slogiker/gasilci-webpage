@@ -775,69 +775,282 @@ const Sections = {
     gallery: {
         async render(container) {
             const res = await API.get('/gallery');
-            const items = res.data;
+            const items = res.data || [];
+            
+            const rawCats = [...new Set(items.map(i => i.category).filter(Boolean))];
+            const categories = ['Vse', ...rawCats];
+
             container.innerHTML = `
                 <div class="section-header">
-                    <h2>Galerija</h2>
-                    <button class="btn btn-primary admin-add-btn" onclick="Sections.gallery.showAddForm()">Dodaj sliko</button>
+                    <h2>Galerija slik</h2>
+                    <button class="btn btn-primary admin-add-btn" onclick="Sections.gallery.showAddForm()"><i class="fas fa-plus"></i> Dodaj slike</button>
                 </div>
-                <div class="card" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-                    ${items.map(item => `
-                        <div style="position: relative;">
-                            <img src="/${item.image_path}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
-                            <div style="padding: 0.5rem;">
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">${item.title || 'Brez naslova'}</p>
-                                <button class="btn btn-sm btn-delete" onclick="Sections.gallery.delete(${item.id})">Izbriši</button>
-                            </div>
-                        </div>
+
+                <div class="category-filters-bar" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+                    ${categories.map((cat, idx) => `
+                        <button class="btn btn-sm admin-gallery-filter" data-cat="${cat}" style="padding: 0.45rem 0.95rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; ${idx === 0 ? 'background: var(--accent, #FABE28); color: #1c1c1c; border-color: var(--accent, #FABE28);' : 'background: transparent; color: var(--text-main); border: 1px solid var(--border, rgba(255,255,255,0.15));'}">
+                            ${cat === 'tekmovanje' ? 'Tekmovanja' : (cat === 'vaje' ? 'Vaje' : (cat === 'prosti-cas' ? 'Prosti čas' : cat))}
+                        </button>
                     `).join('')}
                 </div>
+
+                <div class="card admin-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem;">
+                    ${this.renderItemsHtml(items, 'Vse')}
+                </div>
             `;
+
+            const filterBtns = container.querySelectorAll('.admin-gallery-filter');
+            const gridContainer = container.querySelector('.admin-gallery-grid');
+
+            filterBtns.forEach(btn => {
+                btn.onclick = () => {
+                    filterBtns.forEach(b => {
+                        b.style.background = 'transparent';
+                        b.style.color = 'var(--text-main)';
+                        b.style.borderColor = 'var(--border, rgba(255,255,255,0.15))';
+                    });
+                    btn.style.background = 'var(--accent, #FABE28)';
+                    btn.style.color = '#1c1c1c';
+                    btn.style.borderColor = 'var(--accent, #FABE28)';
+                    
+                    const cat = btn.dataset.cat;
+                    gridContainer.innerHTML = this.renderItemsHtml(items, cat);
+                };
+            });
+        },
+
+        renderItemsHtml(items, filterCat) {
+            const filtered = filterCat === 'Vse' ? items : items.filter(i => (i.category || 'Splošno') === filterCat);
+            if (filtered.length === 0) {
+                return '<div style="grid-column: 1/-1; padding: 3rem; text-align: center; color: var(--text-muted, #aaa);">V tej kategoriji ni slik.</div>';
+            }
+            return filtered.map(item => {
+                const imgSrc = item.image_path.startsWith('http') || item.image_path.startsWith('/') ? item.image_path : '/' + item.image_path;
+                return `
+                <div style="position: relative; background: rgba(0,0,0,0.25); border-radius: 8px; overflow: hidden; border: 1px solid var(--bg-border);">
+                    <img src="${imgSrc}" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                    <div style="padding: 0.75rem;">
+                        <span style="font-size: 0.75rem; color: var(--yellow, #FABE28); text-transform: uppercase; font-weight: 600; display: block;">${item.category || 'Splošno'}</span>
+                        <p style="font-size: 0.9rem; font-weight: 600; margin: 0.2rem 0 0.75rem 0; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title || 'Brez naslova'}</p>
+                        <div class="actions" style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-edit" style="flex: 1;" onclick="Sections.gallery.showEditForm(${item.id})">Uredi</button>
+                            <button class="btn btn-sm btn-delete" style="flex: 1;" onclick="Sections.gallery.delete(${item.id})">Izbriši</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
         },
 
         showAddForm() {
             const html = `
                 <form id="gallery-form">
                     <div class="form-group">
-                        <label>Naslov / Opis</label>
-                        <input type="text" name="title">
+                        <label>Naslov / Opis (izbirno za več slik)</label>
+                        <input type="text" name="title" placeholder="Npr. Operativna vaja 2026">
                     </div>
                     <div class="form-group">
                         <label>Kategorija</label>
-                        <select name="category" id="img-category">
-                            <option value="">Izberi kategorijo...</option>
-                            <option value="tekmovanje">Tekmovanje</option>
+                        <select name="category_select" id="img-category-select" style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border, rgba(255,255,255,0.12)); background: var(--bg-subtle, #1a1a1a); color: var(--text-primary, #fff); cursor: pointer;">
+                            <option value="">-- Izberi kategorijo --</option>
+                            <option value="tekmovanje">Tekmovanja</option>
                             <option value="vaje">Vaje</option>
                             <option value="prosti-cas">Prosti čas</option>
+                            <option value="custom">✏️ Vnesi novo kategorijo...</option>
                         </select>
-                        <input type="text" name="custom_category" placeholder="Ali vpiši novo kategorijo..." style="margin-top: 0.5rem;" />
+                        <div id="custom-cat-container" style="display: none; margin-top: 0.6rem;">
+                            <input type="text" id="custom-cat-input" placeholder="Vpišite ime nove kategorije..." style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--accent, #FABE28); background: var(--bg-subtle, #1a1a1a); color: var(--text-primary, #fff);" />
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Slika</label>
-                        <input type="file" name="image" accept="image/*" required>
+                        <label>Slike (izbereš lahko več slik hkrati)</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+                            <label class="btn" style="background: rgba(250, 190, 40, 0.12); border: 1px solid var(--accent, #FABE28); color: var(--accent, #FABE28); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                                <i class="fas fa-images"></i> Izberi slike (več hkrati)...
+                                <input type="file" name="images" accept="image/*" multiple style="display: none;" required>
+                            </label>
+                            <span class="file-count-txt" style="font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6));">Ni izbranih slik</span>
+                        </div>
+                        <div class="image-previews-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 0.5rem; margin-top: 0.85rem; max-height: 160px; overflow-y: auto; padding-right: 0.2rem;"></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Naloži</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Naloži vse slike</button>
                 </form>
             `;
-            UI.showModal('Dodaj v galerijo', html, () => {
-                document.getElementById('gallery-form').onsubmit = (e) => this.handleSubmit(e);
+            UI.showModal('Dodaj v galerijo (več slik hkrati)', html, () => {
+                const form = document.getElementById('gallery-form');
+                form.onsubmit = (e) => this.handleSubmit(e);
+
+                const catSelect = form.querySelector('#img-category-select');
+                const customContainer = form.querySelector('#custom-cat-container');
+                const customInput = form.querySelector('#custom-cat-input');
+
+                catSelect.onchange = () => {
+                    if (catSelect.value === 'custom') {
+                        customContainer.style.display = 'block';
+                        customInput.focus();
+                    } else {
+                        customContainer.style.display = 'none';
+                        customInput.value = '';
+                    }
+                };
+
+                const imgInput = form.querySelector('input[name="images"]');
+                const countTxt = form.querySelector('.file-count-txt');
+                const previewContainer = form.querySelector('.image-previews-container');
+
+                imgInput.onchange = (e) => {
+                    const files = Array.from(e.target.files);
+                    if (files.length > 0) {
+                        countTxt.textContent = `Izbranih ${files.length} slik`;
+                        previewContainer.innerHTML = files.map(file => {
+                            const url = URL.createObjectURL(file);
+                            return `<img src="${url}" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">`;
+                        }).join('');
+                    } else {
+                        countTxt.textContent = 'Ni izbranih slik';
+                        previewContainer.innerHTML = '';
+                    }
+                };
+            });
+        },
+
+        async showEditForm(id) {
+            const res = await API.get(`/gallery/${id}`);
+            const item = res.data;
+            const imgSrc = item.image_path.startsWith('http') || item.image_path.startsWith('/') ? item.image_path : '/' + item.image_path;
+
+            const isStandard = ['tekmovanje', 'vaje', 'prosti-cas'].includes(item.category);
+            const initialSel = isStandard ? item.category : (item.category ? 'custom' : '');
+
+            const html = `
+                <form id="gallery-edit-form">
+                    <div class="form-group">
+                        <label>Naslov / Opis</label>
+                        <input type="text" name="title" value="${item.title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategorija</label>
+                        <select name="category_select" id="img-category-select" style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border, rgba(255,255,255,0.12)); background: var(--bg-subtle, #1a1a1a); color: var(--text-primary, #fff); cursor: pointer;">
+                            <option value="">-- Izberi kategorijo --</option>
+                            <option value="tekmovanje" ${item.category === 'tekmovanje' ? 'selected' : ''}>Tekmovanja</option>
+                            <option value="vaje" ${item.category === 'vaje' ? 'selected' : ''}>Vaje</option>
+                            <option value="prosti-cas" ${item.category === 'prosti-cas' ? 'selected' : ''}>Prosti čas</option>
+                            <option value="custom" ${!isStandard && item.category ? 'selected' : ''}>✏️ Vnesi novo kategorijo...</option>
+                        </select>
+                        <div id="custom-cat-container" style="display: ${!isStandard && item.category ? 'block' : 'none'}; margin-top: 0.6rem;">
+                            <input type="text" id="custom-cat-input" placeholder="Vpišite ime nove kategorije..." value="${!isStandard ? (item.category || '') : ''}" style="width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--accent, #FABE28); background: var(--bg-subtle, #1a1a1a); color: var(--text-primary, #fff);" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Zamenjaj sliko (izbirno)</label>
+                        <input type="file" name="image" accept="image/*">
+                        <div style="margin-top: 0.75rem;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Trenutna slika:</span>
+                            <img src="${imgSrc}" style="max-height: 120px; border-radius: 6px; border: 1px solid var(--border);">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Shrani spremembe</button>
+                </form>
+            `;
+            UI.showModal('Uredi sliko v galeriji', html, () => {
+                const form = document.getElementById('gallery-edit-form');
+                form.onsubmit = (e) => this.handleEditSubmit(e, id);
+
+                const catSelect = form.querySelector('#img-category-select');
+                const customContainer = form.querySelector('#custom-cat-container');
+                const customInput = form.querySelector('#custom-cat-input');
+
+                catSelect.onchange = () => {
+                    if (catSelect.value === 'custom') {
+                        customContainer.style.display = 'block';
+                        customInput.focus();
+                    } else {
+                        customContainer.style.display = 'none';
+                        customInput.value = '';
+                    }
+                };
             });
         },
 
         async handleSubmit(e) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const customCat = formData.get('custom_category');
-            if (customCat && customCat.trim() !== '') {
-                formData.set('category', customCat);
+            
+            const selVal = formData.get('category_select');
+            let finalCategory = selVal || '';
+            if (selVal === 'custom') {
+                const customVal = e.target.querySelector('#custom-cat-input')?.value;
+                finalCategory = customVal ? customVal.trim() : '';
             }
-            formData.delete('custom_category');
+            formData.set('category', finalCategory);
+            formData.delete('category_select');
             
             try {
-                await API.post('/gallery', formData);
-                UI.showAlert('Slika naložena');
-                UI.closeModal();
-                UI.loadSection('gallery');
+                const response = await fetch('/api/gallery', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('pgd_token')}`
+                    },
+                    body: formData
+                });
+
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (pErr) {
+                    throw new Error('Strežnik je vrnil napako: ' + responseText.substring(0, 100));
+                }
+
+                if (result.success) {
+                    UI.showAlert(result.count > 1 ? `Naloženih ${result.count} slik!` : 'Slika naložena!');
+                    UI.closeModal();
+                    UI.loadSection('gallery');
+                } else {
+                    throw new Error(result.error || 'Napaka pri nalaganju');
+                }
+            } catch (err) {
+                alert(err.message);
+            }
+        },
+
+        async handleEditSubmit(e, id) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const selVal = formData.get('category_select');
+            let finalCategory = selVal || '';
+            if (selVal === 'custom') {
+                const customVal = e.target.querySelector('#custom-cat-input')?.value;
+                finalCategory = customVal ? customVal.trim() : '';
+            }
+            formData.set('category', finalCategory);
+            formData.delete('category_select');
+
+            try {
+                const response = await fetch(`/api/gallery/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('pgd_token')}`
+                    },
+                    body: formData
+                });
+
+                const responseText = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (pErr) {
+                    throw new Error('Strežnik je vrnil napako: ' + responseText.substring(0, 100));
+                }
+
+                if (result.success) {
+                    UI.showAlert('Slika posodobljena');
+                    UI.closeModal();
+                    UI.loadSection('gallery');
+                } else {
+                    throw new Error(result.error || 'Napaka pri posodobitvi');
+                }
             } catch (err) {
                 alert(err.message);
             }
@@ -869,6 +1082,7 @@ const Sections = {
                     <table>
                         <thead>
                             <tr>
+                                <th>Slika</th>
                                 <th>Naslov</th>
                                 <th>Datum</th>
                                 <th>Lokacija</th>
@@ -876,17 +1090,22 @@ const Sections = {
                             </tr>
                         </thead>
                         <tbody>
-                            ${items.map(item => `
+                            ${items.map(item => {
+                                const imgSrc = item.image ? (item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/' + item.image) : '';
+                                return `
                                 <tr>
-                                    <td>${item.title}</td>
-                                    <td>${new Date(item.event_date).toLocaleDateString('sl-SI')}</td>
-                                    <td>${item.location || ''}</td>
+                                    <td>
+                                        ${imgSrc ? `<img src="${imgSrc}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; display: block;">` : '<span style="color: var(--text-muted); font-size: 0.8rem;">Brez slike</span>'}
+                                    </td>
+                                    <td><strong>${item.title}</strong></td>
+                                    <td>${item.event_date ? new Date(item.event_date).toLocaleDateString('sl-SI') : '/'}</td>
+                                    <td>${item.location || '/'}</td>
                                     <td class="actions">
                                         <button class="btn btn-sm btn-edit" onclick="Sections.events.showEditForm(${item.id})">Uredi</button>
                                         <button class="btn btn-sm btn-delete" onclick="Sections.events.delete(${item.id})">Izbriši</button>
                                     </td>
                                 </tr>
-                            `).join('')}
+                            `}).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -897,7 +1116,7 @@ const Sections = {
             const html = `
                 <form id="event-form">
                     <div class="form-group">
-                        <label>Naslov</label>
+                        <label>Naslov dogodka</label>
                         <input type="text" name="title" required>
                     </div>
                     <div class="form-group">
@@ -906,64 +1125,115 @@ const Sections = {
                     </div>
                     <div class="form-group">
                         <label>Lokacija</label>
-                        <input type="text" name="location">
+                        <input type="text" name="location" placeholder="Npr. Gasilski dom Majšperk-Breg">
                     </div>
                     <div class="form-group">
-                        <label>Opis</label>
+                        <label>Opis dogodka</label>
                         <textarea name="description" rows="4"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Shrani</button>
+                    <div class="form-group">
+                        <label>Slika dogodka</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+                            <label class="btn" style="background: rgba(250, 190, 40, 0.12); border: 1px solid var(--accent, #FABE28); color: var(--accent, #FABE28); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                                <i class="fas fa-image"></i> Prebrskaj...
+                                <input type="file" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <span class="file-name-txt" style="font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6));">Ni izbrane datoteke</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Shrani</button>
                 </form>
             `;
             UI.showModal('Dodaj dogodek', html, () => {
-                document.getElementById('event-form').onsubmit = (e) => this.handleSubmit(e);
+                const form = document.getElementById('event-form');
+                form.onsubmit = (e) => this.handleSubmit(e);
+
+                const imgInput = form.querySelector('input[name="image"]');
+                const nameTxt = form.querySelector('.file-name-txt');
+                imgInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file && nameTxt) nameTxt.textContent = file.name;
+                };
             });
         },
 
         async showEditForm(id) {
             const res = await API.get(`/events/${id}`);
             const item = res.data;
+            const imgSrc = item.image ? (item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/' + item.image) : '';
+
             const html = `
                 <form id="event-form">
                     <input type="hidden" name="id" value="${item.id}">
+                    <input type="hidden" name="current_image" value="${item.image || ''}">
                     <div class="form-group">
-                        <label>Naslov</label>
+                        <label>Naslov dogodka</label>
                         <input type="text" name="title" value="${item.title}" required>
                     </div>
                     <div class="form-group">
                         <label>Datum</label>
-                        <input type="date" name="event_date" value="${item.event_date.split(' ')[0]}" required>
+                        <input type="date" name="event_date" value="${item.event_date ? item.event_date.split(' ')[0] : ''}" required>
                     </div>
                     <div class="form-group">
                         <label>Lokacija</label>
                         <input type="text" name="location" value="${item.location || ''}">
                     </div>
                     <div class="form-group">
-                        <label>Opis</label>
+                        <label>Opis dogodka</label>
                         <textarea name="description" rows="4">${item.description || ''}</textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Posodobi</button>
+                    <div class="form-group">
+                        <label>Slika dogodka</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+                            <label class="btn" style="background: rgba(250, 190, 40, 0.12); border: 1px solid var(--accent, #FABE28); color: var(--accent, #FABE28); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                                <i class="fas fa-image"></i> Prebrskaj...
+                                <input type="file" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <span class="file-name-txt" style="font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6));">${item.image ? item.image : 'Ni izbrane nove datoteke'}</span>
+                        </div>
+                        ${imgSrc ? `<img src="${imgSrc}" style="max-height: 100px; border-radius: 6px; margin-top: 0.5rem; border: 1px solid var(--border);">` : ''}
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Posodobi</button>
                 </form>
             `;
             UI.showModal('Uredi dogodek', html, () => {
-                document.getElementById('event-form').onsubmit = (e) => this.handleSubmit(e, true);
+                const form = document.getElementById('event-form');
+                form.onsubmit = (e) => this.handleSubmit(e, true);
+
+                const imgInput = form.querySelector('input[name="image"]');
+                const nameTxt = form.querySelector('.file-name-txt');
+                imgInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file && nameTxt) nameTxt.textContent = file.name;
+                };
             });
         },
 
         async handleSubmit(e, isEdit = false) {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
+            const dataId = formData.get('id');
+
             try {
-                if (isEdit) {
-                    await API.put(`/events/${data.id}`, data);
-                    UI.showAlert('Dogodek posodobljen');
+                const url = isEdit ? `/api/events/${dataId}` : '/api/events';
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('pgd_token')}`
+                    },
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    UI.showAlert(isEdit ? 'Dogodek posodobljen' : 'Dogodek dodan');
+                    UI.closeModal();
+                    UI.loadSection('events');
                 } else {
-                    await API.post('/events', data);
-                    UI.showAlert('Dogodek dodan');
+                    throw new Error(result.error || 'Napaka pri shranjevanju');
                 }
-                UI.closeModal();
-                UI.loadSection('events');
             } catch (err) {
                 alert(err.message);
             }
@@ -1050,6 +1320,7 @@ const Sections = {
             const html = `
                 <form id="vehicle-form">
                     <input type="hidden" name="id" value="${item.id}">
+                    <input type="hidden" name="current_image" value="${item.image || ''}">
                     <div class="form-group">
                         <label>Ime vozila</label>
                         <input type="text" name="name" value="${item.name}" required>
@@ -1083,7 +1354,10 @@ const Sections = {
             const imageFile = formData.get('image');
             if (imageFile && imageFile.size > 0) {
                 data.image = await API.uploadImage(imageFile);
+            } else {
+                data.image = isEdit ? (formData.get('current_image') || null) : null;
             }
+            delete data.current_image;
 
             try {
                 if (isEdit) {
@@ -1129,6 +1403,7 @@ const Sections = {
                                 <th>Ime</th>
                                 <th>Čin</th>
                                 <th>Funkcija</th>
+                                <th>Vulkan/ID</th>
                                 <th>Akcije</th>
                             </tr>
                         </thead>
@@ -1138,6 +1413,7 @@ const Sections = {
                                     <td>${item.name}</td>
                                     <td>${item.rank || '/'}</td>
                                     <td>${item.role || '/'}</td>
+                                    <td>${item.vulkan_id || '/'}</td>
                                     <td class="actions">
                                         <button class="btn btn-sm btn-edit" onclick="Sections.members.showEditForm(${item.id})">Uredi</button>
                                         <button class="btn btn-sm btn-delete" onclick="Sections.members.delete(${item.id})">Izbriši</button>
@@ -1166,14 +1442,45 @@ const Sections = {
                         <input type="text" name="role">
                     </div>
                     <div class="form-group">
-                        <label>Slika</label>
-                        <input type="file" name="image" accept="image/*">
+                        <label>Vulkan / ID številka</label>
+                        <input type="text" name="vulkan_id">
                     </div>
-                    <button type="submit" class="btn btn-primary">Shrani</button>
+                    <div class="form-group">
+                        <label>Slika člana</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+                            <label class="btn" style="background: rgba(250, 190, 40, 0.12); border: 1px solid var(--accent, #FABE28); color: var(--accent, #FABE28); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                                <i class="fas fa-folder-open"></i> Prebrskaj...
+                                <input type="file" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <span class="file-name-txt" style="font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6));">Ni izbrane datoteke</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Shrani</button>
                 </form>
             `;
             UI.showModal('Dodaj člana', html, () => {
-                document.getElementById('member-form').onsubmit = (e) => this.handleSubmit(e);
+                const form = document.getElementById('member-form');
+                form.onsubmit = (e) => this.handleSubmit(e);
+                
+                const imgInput = form.querySelector('input[name="image"]');
+                const nameTxt = form.querySelector('.file-name-txt');
+
+                imgInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        if (nameTxt) nameTxt.textContent = file.name;
+                        startCropper(file, (croppedBlob) => {
+                            if (croppedBlob) {
+                                this.croppedImageBlob = croppedBlob;
+                                UI.showAlert('Slika uspešno obrezana');
+                            } else {
+                                imgInput.value = '';
+                                if (nameTxt) nameTxt.textContent = 'Ni izbrane datoteke';
+                                this.croppedImageBlob = null;
+                            }
+                        });
+                    }
+                };
             });
         },
 
@@ -1183,6 +1490,7 @@ const Sections = {
             const html = `
                 <form id="member-form">
                     <input type="hidden" name="id" value="${item.id}">
+                    <input type="hidden" name="current_image" value="${item.image || ''}">
                     <div class="form-group">
                         <label>Ime in priimek</label>
                         <input type="text" name="name" value="${item.name}" required>
@@ -1196,14 +1504,45 @@ const Sections = {
                         <input type="text" name="role" value="${item.role || ''}">
                     </div>
                     <div class="form-group">
-                        <label>Slika</label>
-                        <input type="file" name="image" accept="image/*">
+                        <label>Vulkan / ID številka</label>
+                        <input type="text" name="vulkan_id" value="${item.vulkan_id || ''}">
                     </div>
-                    <button type="submit" class="btn btn-primary">Posodobi</button>
+                    <div class="form-group">
+                        <label>Slika člana</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+                            <label class="btn" style="background: rgba(250, 190, 40, 0.12); border: 1px solid var(--accent, #FABE28); color: var(--accent, #FABE28); padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;">
+                                <i class="fas fa-folder-open"></i> Prebrskaj...
+                                <input type="file" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <span class="file-name-txt" style="font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6));">${item.image ? item.image : 'Ni izbrane nove datoteke'}</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Posodobi</button>
                 </form>
             `;
             UI.showModal('Uredi člana', html, () => {
-                document.getElementById('member-form').onsubmit = (e) => this.handleSubmit(e, true);
+                const form = document.getElementById('member-form');
+                form.onsubmit = (e) => this.handleSubmit(e, true);
+
+                const imgInput = form.querySelector('input[name="image"]');
+                const nameTxt = form.querySelector('.file-name-txt');
+
+                imgInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        if (nameTxt) nameTxt.textContent = file.name;
+                        startCropper(file, (croppedBlob) => {
+                            if (croppedBlob) {
+                                this.croppedImageBlob = croppedBlob;
+                                UI.showAlert('Slika uspešno obrezana');
+                            } else {
+                                imgInput.value = '';
+                                if (nameTxt) nameTxt.textContent = item.image ? item.image : 'Ni izbrane nove datoteke';
+                                this.croppedImageBlob = null;
+                            }
+                        });
+                    }
+                };
             });
         },
 
@@ -1212,10 +1551,19 @@ const Sections = {
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
             
-            const imageFile = formData.get('image');
-            if (imageFile && imageFile.size > 0) {
-                data.image = await API.uploadImage(imageFile);
+            if (this.croppedImageBlob) {
+                const file = new File([this.croppedImageBlob], 'member_cropped.jpg', { type: 'image/jpeg' });
+                data.image = await API.uploadImage(file);
+            } else {
+                const imageFile = formData.get('image');
+                if (imageFile && imageFile.size > 0) {
+                    data.image = await API.uploadImage(imageFile);
+                } else {
+                    data.image = isEdit ? (formData.get('current_image') || null) : null;
+                }
             }
+            delete data.current_image;
+            this.croppedImageBlob = null;
 
             try {
                 if (isEdit) {
@@ -1243,76 +1591,180 @@ const Sections = {
                 }
             }
         }
-    },
+    }
+};
 
-    applications: {
-        async render(container) {
-            const res = await API.get('/apply');
-            const items = res.data;
-            container.innerHTML = `
-                <div class="section-header">
-                    <h2>Vloge za vstop</h2>
-                </div>
-                <div class="card">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ime</th>
-                                <th>E-pošta</th>
-                                <th>Datum</th>
-                                <th>Akcije</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${items.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.email}</td>
-                                    <td>${new Date(item.created_at).toLocaleDateString('sl-SI')}</td>
-                                    <td class="actions">
-                                        <button class="btn btn-sm btn-edit" onclick="Sections.applications.view(${item.id})">Poglej</button>
-                                        <button class="btn btn-sm btn-delete" onclick="Sections.applications.delete(${item.id})">Izbriši</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        },
-
-        async view(id) {
-            const res = await API.get('/apply/' + id);
-            const item = res.data;
-            const html = `
-                <div style="line-height: 2;">
-                    <p><strong>Ime in priimek:</strong> ${item.name}</p>
-                    <p><strong>E-pošta:</strong> ${item.email}</p>
-                    <p><strong>Telefon:</strong> ${item.phone || '/'}</p>
-                    <p><strong>Datum rojstva:</strong> ${item.birth_date || '/'}</p>
-                    <p><strong>Naslov:</strong> ${item.address || '/'}</p>
-                    <p><strong>Sporočilo:</strong></p>
-                    <div style="background: #f9f9f9; padding: 1rem; border-radius: 4px;">
-                        ${item.message || 'Brez sporočila'}
+function startCropper(file, callback) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'cropper-overlay';
+            overlay.innerHTML = `
+                <div class="cropper-card" style="background: rgba(36, 36, 36, 0.95); border: 1px solid var(--accent, #FABE28); border-radius: 16px; width: 340px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8); position: relative; z-index: 10001;">
+                    <h3 style="color: var(--text-primary, #fff); margin-bottom: 1rem; font-family: var(--font-sans); font-size: 1.1rem; text-align: center;">Prilagodi sliko člana</h3>
+                    <div style="position: relative; width: 280px; height: 280px; border-radius: 8px; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);">
+                        <canvas id="crop-canvas" width="280" height="280" style="cursor: move; display: block;"></canvas>
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(0,0,0,0.65); pointer-events: none; border: 2px dashed var(--yellow, #FABE28);"></div>
+                    </div>
+                    <div style="width: 100%; margin-top: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary);">
+                            <span>Povečava</span>
+                            <span id="zoom-val">100%</span>
+                        </div>
+                        <input type="range" id="crop-zoom" min="0.1" max="3" step="0.02" value="1" style="width: 100%; accent-color: var(--yellow, #FABE28); cursor: pointer;">
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; width: 100%;">
+                        <button type="button" id="crop-cancel" class="btn btn-outline" style="flex: 1; padding: 0.6rem; font-size: 13px; border-radius: 6px; cursor: pointer;">Prekliči</button>
+                        <button type="button" id="crop-confirm" class="btn btn-primary" style="flex: 1; padding: 0.6rem; font-size: 13px; background: var(--yellow, #FABE28); color: var(--text-on-yellow, #1C1C1C); border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Potrdi</button>
                     </div>
                 </div>
             `;
-            UI.showModal('Podrobnosti vloge', html);
-        },
+            
+            Object.assign(overlay.style, {
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backdropFilter: 'blur(14px)',
+                webkitBackdropFilter: 'blur(14px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: '10000'
+            });
 
-        async delete(id) {
-            if (confirm('Izbrišem to vlogo?')) {
-                try {
-                    await API.delete(`/apply/${id}`);
-                    UI.showAlert('Vloga izbrisana');
-                    UI.loadSection('applications');
-                } catch (err) {
-                    alert(err.message);
+            document.body.appendChild(overlay);
+
+            const canvas = overlay.querySelector('#crop-canvas');
+            const ctx = canvas.getContext('2d');
+            const zoomSlider = overlay.querySelector('#crop-zoom');
+            const zoomVal = overlay.querySelector('#zoom-val');
+            const cancelBtn = overlay.querySelector('#crop-cancel');
+            const confirmBtn = overlay.querySelector('#crop-confirm');
+
+            const cw = canvas.width;
+            const ch = canvas.height;
+
+            const minZoom = Math.max(cw / img.width, ch / img.height);
+            zoomSlider.min = minZoom.toFixed(3);
+            
+            let zoom = Math.max(minZoom, 1);
+            zoomSlider.value = zoom;
+            zoomVal.textContent = Math.round(zoom * 100) + '%';
+
+            let panX = 0;
+            let panY = 0;
+
+            const draw = () => {
+                ctx.clearRect(0, 0, cw, ch);
+                ctx.save();
+                
+                const w = img.width * zoom;
+                const h = img.height * zoom;
+                const x = (cw - w) / 2 + panX;
+                const y = (ch - h) / 2 + panY;
+                
+                ctx.drawImage(img, x, y, w, h);
+                ctx.restore();
+            };
+
+            draw();
+
+            zoomSlider.oninput = (e) => {
+                zoom = parseFloat(e.target.value);
+                zoomVal.textContent = Math.round(zoom * 100) + '%';
+                const maxPanX = Math.max(0, (img.width * zoom - cw) / 2);
+                const maxPanY = Math.max(0, (img.height * zoom - ch) / 2);
+                panX = Math.min(maxPanX, Math.max(-maxPanX, panX));
+                panY = Math.min(maxPanY, Math.max(-maxPanY, panY));
+                draw();
+            };
+
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+
+            const handleStart = (clientX, clientY) => {
+                isDragging = true;
+                startX = clientX - panX;
+                startY = clientY - panY;
+                canvas.style.cursor = 'grabbing';
+            };
+
+            const handleMove = (clientX, clientY) => {
+                if (!isDragging) return;
+                
+                let newPanX = clientX - startX;
+                let newPanY = clientY - startY;
+
+                const maxPanX = Math.max(0, (img.width * zoom - cw) / 2);
+                const maxPanY = Math.max(0, (img.height * zoom - ch) / 2);
+
+                panX = Math.min(maxPanX, Math.max(-maxPanX, newPanX));
+                panY = Math.min(maxPanY, Math.max(-maxPanY, newPanY));
+
+                draw();
+            };
+
+            const handleEnd = () => {
+                isDragging = false;
+                canvas.style.cursor = 'move';
+            };
+
+            canvas.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', handleEnd);
+
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                    e.preventDefault();
                 }
-            }
-        }
-    }
-};
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) {
+                    handleMove(e.touches[0].clientX, e.touches[0].clientY);
+                    e.preventDefault();
+                }
+            });
+            canvas.addEventListener('touchend', handleEnd);
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const step = e.deltaY < 0 ? 0.05 : -0.05;
+                let newZoom = Math.min(3, Math.max(minZoom, zoom + step));
+                zoom = newZoom;
+                zoomSlider.value = zoom;
+                zoomVal.textContent = Math.round(zoom * 100) + '%';
+                
+                const maxPanX = Math.max(0, (img.width * zoom - cw) / 2);
+                const maxPanY = Math.max(0, (img.height * zoom - ch) / 2);
+                panX = Math.min(maxPanX, Math.max(-maxPanX, panX));
+                panY = Math.min(maxPanY, Math.max(-maxPanY, panY));
+                
+                draw();
+            });
+
+            cancelBtn.onclick = () => {
+                overlay.remove();
+                callback(null);
+            };
+
+            confirmBtn.onclick = () => {
+                canvas.toBlob((blob) => {
+                    overlay.remove();
+                    callback(blob);
+                }, 'image/jpeg', 0.9);
+            };
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {

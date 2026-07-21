@@ -1,5 +1,6 @@
-# Ignore the mobile app folder as requested
+# Ignore the mobile app folder & php folder in Node branch
 GasilciTekmovanjeApp/
+php/
 
 # Logs
 logs
